@@ -1,0 +1,289 @@
+
+/* Add custom styles here if needed */
+
+
+.sidebar {
+    height: 100vh;
+    /* position: fixed; */
+    /* top: 100px;
+    left: 0;
+    width: 14%; */
+    padding-top: 15px;
+    background-color: #000000;
+    border-top: 1px solid #ffffff;
+}
+
+.main-content {
+    margin-left: 250px; /* Adjust based on your sidebar width */
+    padding: 15px;
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: #f8f9fa;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.left-block {
+    height: 100vh;
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    width: auto; /* Adjust as needed */
+    height: auto;
+    padding: 6px;
+}
+
+.icon-human {
+    margin-top: 25%;
+    width: auto; /* Adjust as needed */
+    height: auto;
+}
+
+.login-caption {
+    color: #fff;
+    margin-top: 10px;
+    font-size:35px;
+}
+
+.right-block {
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-form {
+    width: 80%; /* Adjust as needed */
+    max-width: 600px; /* Adjust as needed */
+}
+
+.form-header {
+    text-align: left;
+    margin-bottom: 45px;
+    font-weight: 275;
+    font-size: 50px;
+    line-height: 58px;
+    color: #c3c3c3;
+}
+
+.form-group {
+    margin-bottom: 25px !important;
+}
+
+.col-form-label {
+    font-weight: 400;
+    font-size: 15px !important;
+    line-height: 24px;
+    color: #777777;
+}
+
+.from-input {
+    border-radius: 10px !important;
+    background-color: #f2f2f2 !important;
+    padding: 20px !important;
+}
+
+.from-select {
+    border-radius: 10px !important;
+    background-color: #f2f2f2 !important;
+}
+
+.btn-submit {
+    padding:8px !important;
+    float: right;
+    width: 20%;
+    color: #ffffff !important;
+    background-color: #D73547 !important;
+    border-radius: 10px !important;
+}
+
+/*** User Form ***/
+
+.user-left-block {
+    /* height: 100vh; */
+    background-color: #000;
+    flex: 1;
+    display: block;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 15%;
+}
+
+.user-caption {
+    color: #fff;
+    margin-top: 50%;
+    text-align: center;
+}
+
+.user-caption h1 {
+    font-size:35px;
+}
+
+.user-caption p {
+    padding-top: 20px;
+    font-size:17px;
+    font-weight: 400;
+}
+
+.user-right-block {
+    /* height: 100vh; */
+    background-color: #ffffff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+    margin-top: 3%;
+}
+
+.user-form {
+    min-height: 83vh;
+    /* max-width: 600px; Adjust as needed */
+    border:1px solid #ced4da;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.form-file {
+    padding: 3px 20px !important;
+    font-size: 0.9rem !important;
+}
+
+
+/* Pills */
+
+.nav-pills .nav-link {
+    border-radius: 0.25rem !important;
+    border: 1px solid #D73547;
+    margin: 10px;
+    color: #D73547;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: white !important;
+    background-color: #D73547 !important;
+}
+
+.tab-content {
+    padding: 20px;
+    width: 100%;
+}
+
+.btn-success {
+    background-color: #5BC089 !important;
+    border-radius: 15px !important;
+    float: right;
+    border: none;
+}
+
+nav.navbar.navbar-expand-lg.navbar-light.bg-light {
+    background-color: #F2F2F2;
+    padding: 0;
+}
+
+a.navbar-brand {
+    background-color: #000000;
+    text-align: center;
+    /* width: 14%; */
+    height: 100px;
+}
+
+.dashboard-logo {
+    width: 151px;
+    padding-top: 12px;
+}
+
+.sidebar-icon {
+    margin-top: -5px;
+}
+
+a.nav-link {
+    /* text-align: center; */
+    color: white;
+    font-size: 15px;
+}
+
+li.nav-item.side-nav.active {
+    background-color: #D73547;
+}
+
+ul.nav.flex-column {
+    margin-top: 40px;
+}
+
+.icon-male {
+    height: 60px;
+    width: 60px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+}
+
+.icon-male-name {
+    float: right;
+    font-size: 30px;
+    color: #B92930;
+    line-height: 45px;
+    font-weight: 500;
+    margin-left: 15px;
+}
+
+.inner-page-head {
+    color: #B92930;
+    font-size: 20px;
+    text-align: left;
+    padding: 30px 0 0;
+}
+
+.card {
+    margin-bottom: 30px 0;
+    border: none !important;
+}
+
+.card-header {
+    border: none !important;
+    background-color: #ffffff !important;
+}
+
+.card-essentials {
+    margin: 30px 0 30px;
+    display: flex;
+    align-items: center; /* Align items vertically at the center */
+    justify-content: space-between; /* Add space between items */
+}
+
+.card-search {
+    border-radius: 20px;
+    padding: 5px 20px;
+}
+
+.card-body {
+    box-shadow: 0px 10px 40px 0px #0165BB1A;
+    border-radius: 20px;
+}
+
+.card-thead {
+    color: #373737;
+    font-weight: 400;
+    font-size: 13px;
+    /* text-align: center; */
+}
+
+.primary-buyer-row {
+    background-color: #EFAA69;
+}
+
+

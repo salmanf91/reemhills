@@ -1,0 +1,20 @@
+
+/* Add custom styles here if needed */
+body {
+    padding-top: 56px; /* Adjust based on your header height */
+}
+
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    top: 56px; /* Adjust based on your header height */
+    left: 0;
+    width: 250px;
+    padding-top: 15px;
+    background-color: #f8f9fa;
+}
+
+.main-content {
+    margin-left: 250px; /* Adjust based on your sidebar width */
+    padding: 15px;
+}
