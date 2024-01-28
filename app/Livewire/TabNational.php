@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+use App\Livewire\UtilityClass;
 
-class TabNational extends Component
+class TabNational extends UtilityClass
 {
 
     use WithFileUploads;
@@ -29,12 +30,16 @@ class TabNational extends Component
     {
         return view('livewire.tab-national');
     }
+    public function test()
+    {
+        // REMOVE AFTER DEVELOPMENT
+        return redirect('https://demo-ipg.ctdev.comtrust.ae/PaymentEx/MerchantPay/Payment?t=8323f690a2d60e6aa3a00a76289beeac&lang=en&layout=C0STCBVLEI');
+    }
 
     protected function rules()
     {
         $rules = $this->generateRules();
 
-        // Add rules for fixed fields
         $rules = array_merge($rules, [
             'project' => 'required|in:project1,project2',
             'phase' => 'required|in:phase1,phase2',
@@ -81,11 +86,13 @@ class TabNational extends Component
             }
         }
 
-        return redirect()->to('/livewire.super-admmin-login');
-        // Additional logic after saving
-
-        // Clear the form
-        $this->resetForm();
+        $epgResponse = $this->customerRegistration($primaryBuyer);
+        $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
+        if ($paymentPageUrl) {
+            return redirect($paymentPageUrl);
+        }else{
+            dd('Error');
+        }
     }
 
     private function saveBuyerData($index)
