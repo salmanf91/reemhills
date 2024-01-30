@@ -28,3 +28,11 @@ Route::get('/createPost', function () {
         'livewireComponent' => 'create-post',
     ]);
 });
+
+
+Route::get('/payment-success', function () {
+    return 'payment successful';
+});
+Route::post('/payment-success', function () {
+    return 'payment successful';
+});

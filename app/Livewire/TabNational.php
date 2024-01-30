@@ -86,8 +86,14 @@ class TabNational extends UtilityClass
             }
         }
 
+        $primaryBuyer->order_id = date('Ymdh') . rand(0, 1000); // Update this with actual order id
+        $primaryBuyer->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
+        $primaryBuyer->amount = rand(0, 100);                // Update this with actual amount
+
         $epgResponse = $this->customerRegistration($primaryBuyer);
         $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
+
+
         if ($paymentPageUrl) {
             return redirect($paymentPageUrl);
         }else{
