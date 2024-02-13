@@ -14,18 +14,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('unit_details', function (Blueprint $table) {
-            $table->string('unit_name')->unique(); // Set unit_name as unique key
-            $table->integer('project_id');
-            $table->integer('phase_id');
-            $table->integer('type_id');
-            $table->integer('building_id');
+            // Set unit_name as unique key
+            $table->id();
+            $table->string('unit_name')->unique(); 
+            $table->string('project_id')->nullable();
+            $table->string('phase_id')->nullable();
+            $table->string('type_id')->nullable();
+            $table->string('building_id')->nullable();
             $table->timestamps();
-
-            // Foreign key constraints (assuming corresponding tables exist)
-            $table->foreign('project_id')->references('id')->on('projects');
-            $table->foreign('phase_id')->references('id')->on('phases');
-            $table->foreign('type_id')->references('id')->on('unit_types');
-            $table->foreign('building_id')->references('id')->on('buildings');
         });
     }
 
