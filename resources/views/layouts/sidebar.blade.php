@@ -14,6 +14,9 @@
             <li class="nav-item side-nav {{ Route::currentRouteName() === 'admin.resale-requests' ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('admin.resale-requests') }}"><img src="images/eye.png" class="sidebar-icon"/>&nbsp; &nbsp;Manage Resale Requests</a>
             </li>
+            <li class="nav-item side-nav {{ Route::currentRouteName() === 'admin.manage-amount' ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.manage-amount') }}"><img src="images/eye.png" class="sidebar-icon"/>&nbsp; &nbsp;Manage Amount</a>
+            </li>
         </ul>
     </div>
 </nav>

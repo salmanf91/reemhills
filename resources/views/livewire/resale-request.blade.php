@@ -11,30 +11,30 @@
     </div>
 
     <div class="col-md-9 col-xs-12 user-right-block">
-
-        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <a wire:click="changeTab('national')" class="nav-link {{ $activeTab === 'national' ? 'active' : '' }}" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">National</a>
+        {{-- <livewire:form-content :buyer-count="$buyerCount" /> --}}
+        <ul  class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#national">National</a>
             </li>
-            <li class="nav-item" role="presentation">
-              <a wire:click="changeTab('international')" class="nav-link {{ $activeTab === 'international' ? 'active' : '' }}" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">International</a>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#international">International</a>
             </li>
-            <li class="nav-item" role="presentation">
-              <a wire:click="changeTab('company')" class="nav-link {{ $activeTab === 'company' ? 'active' : '' }}" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false">Company</a>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#company">Company</a>
             </li>
         </ul>
 
-        <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show {{ $activeTab === 'national' ? 'active' : '' }}" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                @livewire('tab-national', ['buyerCount' => $buyerCount])
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="national">
+                <livewire:form-content :buyer-count="$buyerCount" :selectedTab="'national'" :key="'national'"/>
             </div>
-            <div class="tab-pane fade {{ $activeTab === 'international' ? 'active' : '' }}" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                @livewire('tab-international', ['buyerCount' => $buyerCount])
+            <div class="tab-pane fade" id="international">
+                <livewire:form-content :buyer-count="$buyerCount" :selectedTab="'international'" :key="'international'"/>
             </div>
-            <div class="tab-pane fade {{ $activeTab === 'company' ? 'active' : '' }}" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-                @livewire('tab-company', ['buyerCount' => $buyerCount])
+            <div class="tab-pane fade" id="company">
+                <livewire:form-content :buyer-count="$buyerCount" :selectedTab="'company'" :key="'company'"/>
             </div>
-          </div>
+        </div>
 
     </div>
 </div>

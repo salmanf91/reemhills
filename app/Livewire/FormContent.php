@@ -9,11 +9,13 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use App\Livewire\UtilityClass;
+use App\Http\Controllers\EpgPaymentController;
 
-class TabNational extends UtilityClass
+class FormContent extends UtilityClass
 {
 
     use WithFileUploads;
+    const SUCCESS_RESPONSE_CODE = 0;
 
     public $buyerCount = 1;
     public $buyers = [];
@@ -29,11 +31,6 @@ class TabNational extends UtilityClass
     public function render()
     {
         return view('livewire.tab-national');
-    }
-    public function test()
-    {
-        // REMOVE AFTER DEVELOPMENT
-        return redirect('https://demo-ipg.ctdev.comtrust.ae/PaymentEx/MerchantPay/Payment?t=8323f690a2d60e6aa3a00a76289beeac&lang=en&layout=C0STCBVLEI');
     }
 
     protected function rules()
@@ -66,18 +63,21 @@ class TabNational extends UtilityClass
         return $rules;
     }
 
-    public function submitNational()
+    public function submitNationalOld()
     {
         $this->validate();
 
         // Save primary buyer
         $primaryBuyer = $this->saveBuyerData(0);
+        if (!$primaryBuyer) {
+            // TODO: redirect to error page that says something went wrong and try again
+            dd('something went wrong and try again');
+        }
 
         // Save secondary buyers
         foreach ($this->buyers as $index => $buyer) {
             if ($index > 0) {
                 $secondaryBuyer = $this->saveBuyerData($index);
-
                 // Create relationship
                 BuyerRelationship::create([
                     'primary_buyer_id' => $primaryBuyer->buyer_id,
@@ -86,19 +86,88 @@ class TabNational extends UtilityClass
             }
         }
 
-        $primaryBuyer->order_id = date('Ymdh') . rand(0, 1000); // Update this with actual order id
         $primaryBuyer->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
         $primaryBuyer->amount = rand(0, 100);                // Update this with actual amount
 
         $epgResponse = $this->customerRegistration($primaryBuyer);
-        $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
-
-
-        if ($paymentPageUrl) {
-            return redirect($paymentPageUrl);
-        }else{
-            dd('Error');
+        $epgResponseCode = (int) $epgResponse->Transaction->ResponseCode ?? null;
+        if (!isset($epgResponse->Transaction) || $epgResponseCode !== self::SUCCESS_RESPONSE_CODE) {
+            // TODO: redirect to error page that says something went wrong with EPG customer registration
+            dd('something went wrong with EPG customer registration');
         }
+
+        $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
+        if (!$paymentPageUrl) {
+            // TODO: redirect to error page that says something went wrong with EPG payment page url
+            dd('something went wrong with EPG payment page url');
+        }
+
+        $updateBuyer = Buyer::find($primaryBuyer->buyer_id);
+        $updateBuyer->transaction_id = $epgResponse->Transaction->TransactionID;
+        $updateBuyer->epg_json_response = json_encode($epgResponse);
+        $updateBuyer->save();
+
+        return redirect($paymentPageUrl);
+    }
+    public function submitNational()
+    {
+        $this->validate();
+
+        $primaryBuyer = $this->savePrimaryBuyer();
+        $this->saveSecondaryBuyers($primaryBuyer);
+
+        $buyerData = $primaryBuyer;
+        $buyerData->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
+        // $buyerData->amount = rand(0, 100);                // Update this with actual amount
+
+        // $epgResponse = $this->customerRegistration($buyerData);
+        $epgResponse = EpgPaymentController::customerRegistration($buyerData);
+        $this->handleEpgResponse($epgResponse, $primaryBuyer);
+        return redirect($epgResponse->Transaction->PaymentPage);
+    }
+
+    private function savePrimaryBuyer()
+    {
+        $primaryBuyer = $this->saveBuyerData(0);
+        if (!$primaryBuyer) {
+            // TODO: redirect to error page that says something went wrong and try again
+            dd('something went wrong and try again');
+        }
+
+        return $primaryBuyer;
+    }
+
+    private function saveSecondaryBuyers($primaryBuyer)
+    {
+        foreach ($this->buyers as $index => $buyer) {
+            if ($index > 0) {
+                $secondaryBuyer = $this->saveBuyerData($index);
+                // Create relationship
+                BuyerRelationship::create([
+                    'primary_buyer_id' => $primaryBuyer->buyer_id,
+                    'secondary_buyer_id' => $secondaryBuyer->buyer_id,
+                ]);
+            }
+        }
+    }
+
+    private function handleEpgResponse($epgResponse, $buyer)
+    {
+        $epgResponseCode = (int) $epgResponse->Transaction->ResponseCode ?? null;
+        if (!isset($epgResponse->Transaction) || $epgResponseCode !== self::SUCCESS_RESPONSE_CODE) {
+            // TODO: redirect to error page that says something went wrong with EPG customer registration
+            dd('something went wrong with EPG customer registration');
+        }
+
+        $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
+        if (!$paymentPageUrl) {
+            // TODO: redirect to error page that says something went wrong with EPG payment page url
+            dd('something went wrong with EPG payment page url');
+        }
+
+        $buyer->transaction_id = $epgResponse->Transaction->TransactionID;
+        $buyer->epg_json_response = json_encode($epgResponse);
+        $buyer->save();
     }
 
     private function saveBuyerData($index)
@@ -120,6 +189,7 @@ class TabNational extends UtilityClass
             $buyer->emirates_id_path = $this->saveFile($this->emirates_id, 'emirates_id', $buyer->buyer_id);
             $buyer->mou_doc_path = $this->saveFile($this->mou_document, 'mou_document', $buyer->buyer_id);
             $buyer->is_primary_buyer = 1;
+            $buyer->order_id = date('Ymdh') . rand(0, 1000);
         } else {
             // Secondary buyer, set is_primary_buyer to 0
             $buyer->is_primary_buyer = 0;
@@ -183,4 +253,3 @@ class TabNational extends UtilityClass
         $this->rules = $this->generateRules();
     }
 }
-
