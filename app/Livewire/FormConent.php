@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
+use App\Livewire\UtilityClass;
+use App\Http\Controllers\EpgPaymentController;
 
-class TabNational extends Component
+class FormContent extends UtilityClass
 {
 
     use WithFileUploads;
+    const SUCCESS_RESPONSE_CODE = 0;
 
     public $buyerCount = 1;
     public $buyers = [];
@@ -27,18 +30,17 @@ class TabNational extends Component
 
     public function render()
     {
-        return view('livewire.tab-national');
+        return view('livewire.form-content');
     }
 
     protected function rules()
     {
         $rules = $this->generateRules();
 
-        // Add rules for fixed fields
         $rules = array_merge($rules, [
             'project' => 'required|in:project1,project2',
             'phase' => 'required|in:phase1,phase2',
-            'unit_no' => 'required|string',
+            'unit_no' => 'required|numeric',
             'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
             'emirates_id' => 'required|file|mimes:pdf,jpg,png|max:5120',
             'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
@@ -61,18 +63,21 @@ class TabNational extends Component
         return $rules;
     }
 
-    public function submitNational()
+    public function submitNationalOld()
     {
         $this->validate();
 
         // Save primary buyer
         $primaryBuyer = $this->saveBuyerData(0);
+        if (!$primaryBuyer) {
+            // TODO: redirect to error page that says something went wrong and try again
+            dd('something went wrong and try again');
+        }
 
         // Save secondary buyers
         foreach ($this->buyers as $index => $buyer) {
             if ($index > 0) {
                 $secondaryBuyer = $this->saveBuyerData($index);
-
                 // Create relationship
                 BuyerRelationship::create([
                     'primary_buyer_id' => $primaryBuyer->buyer_id,
@@ -81,11 +86,88 @@ class TabNational extends Component
             }
         }
 
-        return redirect()->to('/livewire.super-admmin-login');
-        // Additional logic after saving
+        $primaryBuyer->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
+        $primaryBuyer->amount = rand(0, 100);                // Update this with actual amount
 
-        // Clear the form
-        $this->resetForm();
+        $epgResponse = $this->customerRegistration($primaryBuyer);
+        $epgResponseCode = (int) $epgResponse->Transaction->ResponseCode ?? null;
+        if (!isset($epgResponse->Transaction) || $epgResponseCode !== self::SUCCESS_RESPONSE_CODE) {
+            // TODO: redirect to error page that says something went wrong with EPG customer registration
+            dd('something went wrong with EPG customer registration');
+        }
+
+        $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
+        if (!$paymentPageUrl) {
+            // TODO: redirect to error page that says something went wrong with EPG payment page url
+            dd('something went wrong with EPG payment page url');
+        }
+
+        $updateBuyer = Buyer::find($primaryBuyer->buyer_id);
+        $updateBuyer->transaction_id = $epgResponse->Transaction->TransactionID;
+        $updateBuyer->epg_json_response = json_encode($epgResponse);
+        $updateBuyer->save();
+
+        return redirect($paymentPageUrl);
+    }
+    public function submitNational()
+    {
+        $this->validate();
+
+        $primaryBuyer = $this->savePrimaryBuyer();
+        $this->saveSecondaryBuyers($primaryBuyer);
+
+        $buyerData = $primaryBuyer;
+        $buyerData->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
+        // $buyerData->amount = rand(0, 100);                // Update this with actual amount
+
+        // $epgResponse = $this->customerRegistration($buyerData);
+        $epgResponse = EpgPaymentController::customerRegistration($buyerData);
+        $this->handleEpgResponse($epgResponse, $primaryBuyer);
+        return redirect($epgResponse->Transaction->PaymentPage);
+    }
+
+    private function savePrimaryBuyer()
+    {
+        $primaryBuyer = $this->saveBuyerData(0);
+        if (!$primaryBuyer) {
+            // TODO: redirect to error page that says something went wrong and try again
+            dd('something went wrong and try again');
+        }
+
+        return $primaryBuyer;
+    }
+
+    private function saveSecondaryBuyers($primaryBuyer)
+    {
+        foreach ($this->buyers as $index => $buyer) {
+            if ($index > 0) {
+                $secondaryBuyer = $this->saveBuyerData($index);
+                // Create relationship
+                BuyerRelationship::create([
+                    'primary_buyer_id' => $primaryBuyer->buyer_id,
+                    'secondary_buyer_id' => $secondaryBuyer->buyer_id,
+                ]);
+            }
+        }
+    }
+
+    private function handleEpgResponse($epgResponse, $buyer)
+    {
+        $epgResponseCode = (int) $epgResponse->Transaction->ResponseCode ?? null;
+        if (!isset($epgResponse->Transaction) || $epgResponseCode !== self::SUCCESS_RESPONSE_CODE) {
+            // TODO: redirect to error page that says something went wrong with EPG customer registration
+            dd('something went wrong with EPG customer registration');
+        }
+
+        $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
+        if (!$paymentPageUrl) {
+            // TODO: redirect to error page that says something went wrong with EPG payment page url
+            dd('something went wrong with EPG payment page url');
+        }
+
+        $buyer->transaction_id = $epgResponse->Transaction->TransactionID;
+        $buyer->epg_json_response = json_encode($epgResponse);
+        $buyer->save();
     }
 
     private function saveBuyerData($index)
@@ -107,6 +189,7 @@ class TabNational extends Component
             $buyer->emirates_id_path = $this->saveFile($this->emirates_id, 'emirates_id', $buyer->buyer_id);
             $buyer->mou_doc_path = $this->saveFile($this->mou_document, 'mou_document', $buyer->buyer_id);
             $buyer->is_primary_buyer = 1;
+            $buyer->order_id = date('Ymdh') . rand(0, 1000);
         } else {
             // Secondary buyer, set is_primary_buyer to 0
             $buyer->is_primary_buyer = 0;
@@ -169,5 +252,15 @@ class TabNational extends Component
 
         $this->rules = $this->generateRules();
     }
-}
 
+    public function dismissErrorMessage()
+    {
+        $this->resetValidation(); // Reset validation errors
+    }
+
+    public function removeBuyer()
+    {
+        array_pop($this->buyers);
+        $this->buyerCount = count($this->buyers);
+    }
+}
