@@ -190,6 +190,12 @@ body {
     border: none;
 }
 
+.btn-danger {
+    background-color: #D73547 !important;
+    border-radius: 15px !important;
+    border: none;
+}
+
 nav.navbar.navbar-expand-lg.navbar-light.bg-light {
     background-color: #F2F2F2;
     padding: 0;
