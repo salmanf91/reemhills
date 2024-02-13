@@ -17,6 +17,7 @@ class FormContent extends UtilityClass
     use WithFileUploads;
     const SUCCESS_RESPONSE_CODE = 0;
 
+    public $selectedTab = 'national';
     public $buyerCount = 1;
     public $buyers = [];
     public $project;
@@ -173,7 +174,11 @@ class FormContent extends UtilityClass
     private function saveBuyerData($index)
     {
         $buyer = Buyer::create([
-            'buyer_type' => 1,
+            'buyer_type' => match ($this->selectedTab) {
+                'national' => 1,
+                'international' => 2,
+                'company' => 3,
+            },
             'buyers_name' => $this->buyers[$index]['name'],
             'mobile_no' => $this->buyers[$index]['mobile_no'],
             'email_id' => $this->buyers[$index]['email_id'],
@@ -186,10 +191,17 @@ class FormContent extends UtilityClass
             $buyer->phase = $this->phase;
             $buyer->unit_no = $this->unit_no;
             $buyer->passport_path = $this->saveFile($this->passport_copy, 'passport', $buyer->buyer_id);
-            $buyer->emirates_id_path = $this->saveFile($this->emirates_id, 'emirates_id', $buyer->buyer_id);
+            if ($this->selectedTab !== 'international') {
+                $buyer->emirates_id_path = $this->saveFile($this->emirates_id, 'emirates_id', $buyer->buyer_id);
+            }
             $buyer->mou_doc_path = $this->saveFile($this->mou_document, 'mou_document', $buyer->buyer_id);
+            if ($this->selectedTab === 'company') {
+                $buyer->company_name = $this->company_name;
+                $buyer->tl_no = $this->company_tl_no;
+                $buyer->trade_license_path = $this->saveFile($this->company_trade_license, 'trade_license', $buyer->buyer_id);
+            }
             $buyer->is_primary_buyer = 1;
-            $buyer->order_id = date('Ymdh') . rand(0, 1000);
+            $buyer->order_id = $this->randomNumber;
         } else {
             // Secondary buyer, set is_primary_buyer to 0
             $buyer->is_primary_buyer = 0;
@@ -211,6 +223,7 @@ class FormContent extends UtilityClass
 
     private function resetForm()
     {
+        $this->selectedTab = 'national';
         // Reset form data
         $this->buyers = [
             [
