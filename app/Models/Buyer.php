@@ -36,7 +36,10 @@ class Buyer extends Model
         'mou_doc_path',
         'company_name',
         'tl_no',
-        'trade_license_path'
+        'trade_license_path',
+        'building',
+        'type',
+        'order_id'
     ];
 
     /**

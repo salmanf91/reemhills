@@ -112,29 +112,69 @@
                         <label for="project" class="col-sm-3 col-form-label">Project</label>
                         <div class="col-sm-9">
                             <select wire:model="project" class="form-control from-select" id="project" name="project" required>
-                                <option value="">Select Project</option>
-                                <option value="project1">Project 1</option>
-                                <option value="project2">Project 2</option>
-                                </select>
+                                @forelse ($project as $item)
+                                <option value="{{$item}}">{{$item}}</option>
+                                @empty
+                                
+                                @endforelse
+                            </select>
+                        </div>
+                    </div>
+
+                    
+                    <div class="form-group row">
+                        <label for="phase" class="col-sm-3 col-form-label">Phase</label>
+                        <div class="col-sm-9">
+                            <select wire:model="phase_id" wire:change="getTypeForDropdown()" class="form-control from-select" id="phase" name="phase" required>
+                            <option selected="selected">Select Phase</option>
+                                @forelse ($phase as $item)
+                                <option value="{{$item}}">{{$item}}</option>
+                                @empty
+                                
+                                @endforelse
+                            </select>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="phase" class="col-sm-3 col-form-label">Phase</label>
+                        <label for="unit_no" class="col-sm-3 col-form-label">Type</label>
                         <div class="col-sm-9">
-                            <select wire:model="phase" class="form-control from-select" id="phase" name="phase" required>
-                                <option value="">Select Phase</option>
-                                <option value="phase1">Phase 1</option>
-                                <option value="phase2">Phase 2</option>
-                                </select>
-                        </div>
+                        <select wire:model="type_id"  wire:change="getBuildingForDropdown()" class="form-control from-select" id="type" name="type" required>
+                            <option selected="selected">Select Type</option>
+                                @forelse ($type as $item)
+                                <option value="{{$item}}">{{$item}}</option>
+                                @empty
+                                
+                                @endforelse
+                         </select>
+                         </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="unit_no" class="col-sm-3 col-form-label">Building</label>
+                        <div class="col-sm-9">
+                        <select wire:model="building_id" wire:change="getUnitNoForDropdown()" class="form-control from-select" id="building" name="building" required>
+                            <option selected="selected">Select Building</option>
+                                @forelse ($building as $item)
+                                <option value="{{$item}}">{{$item}}</option>
+                                @empty
+                                
+                                @endforelse
+                         </select>
+                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="unit_no" class="col-sm-3 col-form-label">Unit Number</label>
                         <div class="col-sm-9">
-                            <input wire:model="unit_no" type="text" class="form-control from-input" id="unit_no" name="unit_no" placeholder="123456" required>
-                        </div>
+                        <select wire:model="unit_name" class="form-control from-select" id="unit_name" name="unit_name" required>
+                            <option selected="selected">Select Phase</option>
+                                @forelse ($unit_no as $item)
+                                <option value="{{$item}}">{{$item}}</option>
+                                @empty
+                                @endforelse
+                         </select>
+                         </div>
                     </div>
 
                     <div class="form-group row">
