@@ -10,6 +10,7 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use App\Livewire\UtilityClass;
 use App\Http\Controllers\EpgPaymentController;
+use App\Models\UnitDetail;
 
 class FormContent extends UtilityClass
 {
@@ -20,14 +21,91 @@ class FormContent extends UtilityClass
     public $selectedTab = 'national';
     public $buyerCount = 1;
     public $buyers = [];
-    public $project;
-    public $phase;
-    public $unit_no;
+    public $project =[];
+    public $phase = [];
+    public $unit_no = [];
+    public $building = [];
+    public $type = [];
     public $passport_copy;
     public $emirates_id;
     public $mou_document;
 
+    public $project_id;
+    public $phase_id;
+    public $unit_name;
+    public $building_id;
+    public $type_id;
+
     protected $rules;
+
+    public function mount () {
+        $this->phase = $this->getData('phase_id');
+        $this->project = $this->getData('project_id');
+        $this->unit_no = [];
+        $this->building = [];
+        $this->type = [];
+    }
+
+    private function getData ($column) {
+        return UnitDetail::distinct($column)->pluck($column);
+    }
+
+
+    function getTypeForDropdown() {
+
+        $this->type = [];
+        $this->building = [];
+        $this->unit_no = [];
+
+        $distinctRecords = UnitDetail::where('phase_id', $this->phase_id)
+        ->distinct()
+        ->select('type_id')
+        ->get();
+        $this->type = $distinctRecords->pluck('type_id')->unique()->toArray();
+        // $this->building = $distinctRecords->pluck('building_id')->unique()->toArray();
+        // $this->unit_no = $distinctRecords->pluck('unit_name')->unique()->toArray();
+    }
+
+    function getBuildingForDropdown() {
+
+        $this->building = [];
+        $this->unit_no = [];
+
+        $filters = [
+            'phase_id' => $this->phase_id,
+            'type_id' => $this->type_id
+        ];
+
+        $distinctRecords = UnitDetail::where($filters)
+        ->distinct()
+        ->select('building_id')
+        ->get();
+        $this->building = $distinctRecords->pluck('building_id')->unique()->toArray();
+
+        if (empty($myArray) || $this->building[0]==="") {
+            $filters['building_id'] = '';
+            $distinctRecords1 = UnitDetail::where($filters)
+            ->distinct()
+            ->select('unit_name')
+            ->get();
+            $this->unit_no = $distinctRecords1->pluck('unit_name')->unique()->toArray();
+        }
+    }
+
+    function getUnitNoForDropdown () {
+
+        $filters = [
+            'phase_id' => $this->phase_id,
+            'type_id' => $this->type_id,
+            'building_id' => $this->building_id
+        ];
+        $distinctRecords1 = UnitDetail::where($filters)
+            ->distinct()
+            ->select('unit_name')
+            ->get();
+        $this->unit_no = $distinctRecords1->pluck('unit_name')->unique()->toArray();
+
+    }
 
     public function render()
     {
@@ -39,9 +117,9 @@ class FormContent extends UtilityClass
         $rules = $this->generateRules();
 
         $rules = array_merge($rules, [
-            'project' => 'required|in:project1,project2',
-            'phase' => 'required|in:phase1,phase2',
-            'unit_no' => 'required|numeric',
+            'project' => 'required',
+            'phase' => 'required',
+            'unit_no' => 'required',
             'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
             'emirates_id' => 'required|file|mimes:pdf,jpg,png|max:5120',
             'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
@@ -64,53 +142,54 @@ class FormContent extends UtilityClass
         return $rules;
     }
 
-    public function submitNationalOld()
-    {
-        $this->validate();
+    // public function submitNationalOld()
+    // {
+    //     $this->validate();
 
-        // Save primary buyer
-        $primaryBuyer = $this->saveBuyerData(0);
-        if (!$primaryBuyer) {
-            // TODO: redirect to error page that says something went wrong and try again
-            dd('something went wrong and try again');
-        }
+    //     // Save primary buyer
+    //     $primaryBuyer = $this->saveBuyerData(0);
+    //     if (!$primaryBuyer) {
+    //         // TODO: redirect to error page that says something went wrong and try again
+    //         dd('something went wrong and try again');
+    //     }
 
-        // Save secondary buyers
-        foreach ($this->buyers as $index => $buyer) {
-            if ($index > 0) {
-                $secondaryBuyer = $this->saveBuyerData($index);
-                // Create relationship
-                BuyerRelationship::create([
-                    'primary_buyer_id' => $primaryBuyer->buyer_id,
-                    'secondary_buyer_id' => $secondaryBuyer->buyer_id,
-                ]);
-            }
-        }
+    //     // Save secondary buyers
+    //     foreach ($this->buyers as $index => $buyer) {
+    //         if ($index > 0) {
+    //             $secondaryBuyer = $this->saveBuyerData($index);
+    //             // Create relationship
+    //             BuyerRelationship::create([
+    //                 'primary_buyer_id' => $primaryBuyer->buyer_id,
+    //                 'secondary_buyer_id' => $secondaryBuyer->buyer_id,
+    //             ]);
+    //         }
+    //     }
 
-        $primaryBuyer->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
-        $primaryBuyer->amount = rand(0, 100);                // Update this with actual amount
+    //     $primaryBuyer->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
+    //     $primaryBuyer->amount = rand(0, 100);                // Update this with actual amount
 
-        $epgResponse = $this->customerRegistration($primaryBuyer);
-        $epgResponseCode = (int) $epgResponse->Transaction->ResponseCode ?? null;
-        if (!isset($epgResponse->Transaction) || $epgResponseCode !== self::SUCCESS_RESPONSE_CODE) {
-            // TODO: redirect to error page that says something went wrong with EPG customer registration
-            dd('something went wrong with EPG customer registration');
-        }
+    //     $epgResponse = $this->customerRegistration($primaryBuyer);
+    //     $epgResponseCode = (int) $epgResponse->Transaction->ResponseCode ?? null;
+    //     if (!isset($epgResponse->Transaction) || $epgResponseCode !== self::SUCCESS_RESPONSE_CODE) {
+    //         // TODO: redirect to error page that says something went wrong with EPG customer registration
+    //         dd('something went wrong with EPG customer registration');
+    //     }
 
-        $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
-        if (!$paymentPageUrl) {
-            // TODO: redirect to error page that says something went wrong with EPG payment page url
-            dd('something went wrong with EPG payment page url');
-        }
+    //     $paymentPageUrl = $epgResponse->Transaction->PaymentPage ?? null;
+    //     if (!$paymentPageUrl) {
+    //         // TODO: redirect to error page that says something went wrong with EPG payment page url
+    //         dd('something went wrong with EPG payment page url');
+    //     }
 
-        $updateBuyer = Buyer::find($primaryBuyer->buyer_id);
-        $updateBuyer->transaction_id = $epgResponse->Transaction->TransactionID;
-        $updateBuyer->epg_json_response = json_encode($epgResponse);
-        $updateBuyer->save();
+    //     $updateBuyer = Buyer::find($primaryBuyer->buyer_id);
+    //     $updateBuyer->transaction_id = $epgResponse->Transaction->TransactionID;
+    //     $updateBuyer->epg_json_response = json_encode($epgResponse);
+    //     $updateBuyer->save();
 
-        return redirect($paymentPageUrl);
-    }
-    public function submitNational()
+    //     return redirect($paymentPageUrl);
+    // }
+
+    public function submit()
     {
         $this->validate();
 
@@ -118,10 +197,20 @@ class FormContent extends UtilityClass
         $this->saveSecondaryBuyers($primaryBuyer);
 
         $buyerData = $primaryBuyer;
+
+        $json = json_encode($buyerData);
+
+        //dd($json);
+
+        // buyer_type
+        // buyer_id : 11
+        // project : null
+        // passport_path : "/storage/passport/11/doUGiv9kKgel7sdAWN5RyGcm5txoRKpPxfdJMdW7.pdf"
+
         $buyerData->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
         // $buyerData->amount = rand(0, 100);                // Update this with actual amount
 
-        // $epgResponse = $this->customerRegistration($buyerData);
+        $epgResponse = $this->customerRegistration($buyerData);
         $epgResponse = EpgPaymentController::customerRegistration($buyerData);
         $this->handleEpgResponse($epgResponse, $primaryBuyer);
         return redirect($epgResponse->Transaction->PaymentPage);
@@ -189,7 +278,7 @@ class FormContent extends UtilityClass
             // Save additional details for primary buyer
             $buyer->project = $this->project;
             $buyer->phase = $this->phase;
-            $buyer->unit_no = $this->unit_no;
+            $buyer->unit_no = $this->unit_name;
             $buyer->passport_path = $this->saveFile($this->passport_copy, 'passport', $buyer->buyer_id);
             if ($this->selectedTab !== 'international') {
                 $buyer->emirates_id_path = $this->saveFile($this->emirates_id, 'emirates_id', $buyer->buyer_id);
@@ -201,13 +290,25 @@ class FormContent extends UtilityClass
                 $buyer->trade_license_path = $this->saveFile($this->company_trade_license, 'trade_license', $buyer->buyer_id);
             }
             $buyer->is_primary_buyer = 1;
-            $buyer->order_id = $this->randomNumber;
+            $buyer->order_id = date('Ymdh') . rand(0, 1000);
+
+            $buyer->project = $this->project[0];
+            $buyer->phase = $this->phase_id;
+            $buyer->building = $this->building_id;
+            $buyer->type = $this->type_id;
+            $buyer->unit_no = $this->unit_name;
+
         } else {
             // Secondary buyer, set is_primary_buyer to 0
             $buyer->is_primary_buyer = 0;
         }
 
         $buyer->save();
+
+        //Send data to salesforce
+
+
+        //Send data to salesforce
         return $buyer;
     }
 

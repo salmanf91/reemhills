@@ -15,9 +15,9 @@ class CreateBuyerTable extends Migration
             $table->bigInteger('mobile_no');
             $table->string('email_id');
             $table->string('address');
-            $table->string('project')->nullable();;
-            $table->string('phase')->nullable();;
-            $table->integer('unit_no')->nullable();;
+            $table->string('project')->nullable();
+            $table->string('phase')->nullable();
+            $table->integer('unit_no')->nullable();
             $table->string('passport_path')->nullable();
             $table->string('emirates_id_path')->nullable();
             $table->string('mou_doc_path')->nullable();
@@ -25,6 +25,8 @@ class CreateBuyerTable extends Migration
             $table->string('tl_no')->nullable();
             $table->string('trade_license_path')->nullable();
             $table->tinyInteger('is_primary_buyer')->default(1);
+            $table->string('building')->nullable();
+            $table->string('type')->nullable();
             $table->timestamps();
         });
     }

@@ -49,6 +49,7 @@ class EpgPaymentController extends Controller
 
     public static function makeHttpRequest($client, $jsonData)
     {
+        //dd($jsonData);
         self::initialize();
         return $client->request('POST', self::$epgUrl. ':' .self::$epgPort, [
             'headers' => [
@@ -68,7 +69,7 @@ class EpgPaymentController extends Controller
         $buyer = $this->findBuyer($orderId);
         $epgResponse = $this->finalizeEpgPayment($buyer->transaction_id);
         $this->handleEpgResponse($epgResponse, $buyer);
-
+        dd('Payment successful');
         return redirect()->route('payment.success');
     }
 
@@ -128,18 +129,11 @@ class EpgPaymentController extends Controller
             dd('Payment failed');
         }
 
-        dd('Payment successful');
+        return;
     }
 
     private function createBuyerPayment($epgResponse, $buyer)
     {
-        // return BuyerPayment::create([
-        //     'buyer_id' => $buyer->buyer_id,
-        //     'transaction_id' => $buyer->transaction_id,
-        //     'payment_status' => $epgResponse->Transaction->ResponseCode ?? null,
-        //     'epg_json_response' => json_encode($epgResponse),
-        // ]);
-
         $buyerPayment = new BuyerPayment();
         $buyerPayment->buyer_id = $buyer->buyer_id;
         $buyerPayment->payment_status = $epgResponse->Transaction->ResponseCode ?? null;
