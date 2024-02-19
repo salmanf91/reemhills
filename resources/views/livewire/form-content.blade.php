@@ -1,5 +1,4 @@
 <!-- resources/views/livewire/user-form.blade.php -->
-
 <div>
     <div class="user-form">
         @if ($errors->any())
@@ -164,9 +163,9 @@
                          </div>
                     </div>
 
-                    <div class="form-group row">
+                    <div class="form-group row" >
                         <label for="unit_no" class="col-sm-3 col-form-label">Unit Number</label>
-                        <div class="col-sm-9">
+                        <div class="col-sm-9" wire:ignore>
                         <select wire:model="unit_name" class="form-control from-select" id="unit_name" name="unit_name" required>
                             <option selected="selected">Select Phase</option>
                                 @forelse ($unit_no as $item)
@@ -217,7 +216,19 @@
         </form>
     </div>
 </div>
+@push('scripts')
 
+<script>
+    $(document).ready(function () {
+        $('#unit_name').select2();
+        $('#unit_name').on('change', function (e) {
+            var data = $('#unit_name').select2("val");
+            @this.set('selected', data);
+        });
+    });
+</script>
+
+@endpush
 
 <script>
     document.addEventListener('livewire:load', function () {
@@ -226,3 +237,6 @@
         });
     });
 </script>
+
+
+
