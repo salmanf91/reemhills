@@ -1,5 +1,4 @@
 <!-- resources/views/livewire/user-form.blade.php -->
-
 <div>
     <div class="user-form">
         @if ($errors->any())
@@ -111,7 +110,7 @@
                     <div class="form-group row">
                         <label for="project" class="col-sm-3 col-form-label">Project</label>
                         <div class="col-sm-9">
-                            <select wire:model="project" class="form-control from-select" id="project" name="project" required>
+                            <select wire:model="project" class="form-control from-select" id="project_id" name="project" required>
                                 @forelse ($project as $item)
                                 <option value="{{$item}}">{{$item}}</option>
                                 @empty
@@ -125,7 +124,7 @@
                     <div class="form-group row">
                         <label for="phase" class="col-sm-3 col-form-label">Phase</label>
                         <div class="col-sm-9">
-                            <select wire:model="phase_id" wire:change="getTypeForDropdown()" class="form-control from-select" id="phase" name="phase" required>
+                            <select wire:model="phase_id" wire:change="getTypeForDropdown()" class="form-control from-select" id="phase_id" name="phase" required>
                             <option selected="selected">Select Phase</option>
                                 @forelse ($phase as $item)
                                 <option value="{{$item}}">{{$item}}</option>
@@ -137,9 +136,9 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="unit_no" class="col-sm-3 col-form-label">Type</label>
+                        <label for="type" class="col-sm-3 col-form-label">Type</label>
                         <div class="col-sm-9">
-                        <select wire:model="type_id"  wire:change="getBuildingForDropdown()" class="form-control from-select" id="type" name="type" required>
+                        <select wire:model="type_id"  wire:change="getBuildingForDropdown()" class="form-control from-select" id="type_id" name="type" required>
                             <option selected="selected">Select Type</option>
                                 @forelse ($type as $item)
                                 <option value="{{$item}}">{{$item}}</option>
@@ -151,9 +150,9 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="unit_no" class="col-sm-3 col-form-label">Building</label>
+                        <label for="building" class="col-sm-3 col-form-label">Building</label>
                         <div class="col-sm-9">
-                        <select wire:model="building_id" wire:change="getUnitNoForDropdown()" class="form-control from-select" id="building" name="building" required>
+                        <select wire:model="building_id" wire:change="getUnitNoForDropdown()" class="form-control from-select" id="building_id" name="building" required>
                             <option selected="selected">Select Building</option>
                                 @forelse ($building as $item)
                                 <option value="{{$item}}">{{$item}}</option>
@@ -164,13 +163,26 @@
                          </div>
                     </div>
 
-                    <div class="form-group row">
+                    <div class="form-group row" >
                         <label for="unit_no" class="col-sm-3 col-form-label">Unit Number</label>
                         <div class="col-sm-9">
-                        <select wire:model="unit_name" class="form-control from-select" id="unit_name" name="unit_name" required>
+                        <select wire:model="unit_id"  class="form-control from-select" id="unit_id" name="unit_no" required>
                             <option selected="selected">Select Phase</option>
-                                @forelse ($unit_no as $item)
+                                @forelse ($unit_nos as $item)
                                 <option value="{{$item}}">{{$item}}</option>
+                                @empty
+                                @endforelse
+                         </select>
+                         </div>
+                    </div>
+
+                    <div class="form-group row" >
+                        <label for="unit_no_2" class="col-sm-3 col-form-label">Unit Number</label>
+                        <div class="col-sm-9">
+                        <select wire:model="unit_name2"  class="form-control from-select" id="unit_name2" name="unit_name2" required>
+                            <option selected="selected">Select Phase</option>
+                                @forelse ($unitDetails as $unitDetail)
+                                <option value="{{$unitDetail->id}}">{{ $unitDetail->phase_id . ' | ' . $unitDetail->type_id . ' | ' . $unitDetail->building_id . ' | ' . $unitDetail->unit_name }}</option>
                                 @empty
                                 @endforelse
                          </select>
@@ -218,6 +230,15 @@
     </div>
 </div>
 
+@push('scripts')
+
+<script>
+    $(document).ready(function () {
+        $('#unit_name2').select2();
+    });
+</script>
+
+@endpush
 
 <script>
     document.addEventListener('livewire:load', function () {
@@ -226,3 +247,6 @@
         });
     });
 </script>
+
+
+
