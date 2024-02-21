@@ -17,8 +17,8 @@ class SuperAdminSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'Salman Farees',
-            'email' => 'salmanfrs91@gmail.com',
-            'password' => Hash::make('admin@123'),
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('admin'),
             'role' => 'superadmin',
             'email_verified_at' => now(), // Set the current timestamp for email verification
             'remember_token' => Str::random(10), // Generate a random remember token
