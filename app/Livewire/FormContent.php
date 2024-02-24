@@ -10,8 +10,10 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use App\Livewire\UtilityClass;
 use App\Http\Controllers\EpgPaymentController;
+use App\Http\Controllers\SalesforceController;
 use App\Models\UnitDetail;
 use function Livewire\Volt\{on};
+use Illuminate\Support\Facades\File;
 
 class FormContent extends UtilityClass
 {
@@ -41,12 +43,8 @@ class FormContent extends UtilityClass
     
     public $unitDetails = [];
 
-    public function mount () {
-        $this->phase = $this->getData('phase_id');
+    public function mount () {        
         $this->project = $this->getData('project_id');
-        $this->unit_nos = $this->getData('unit_name');
-        $this->building = $this->getData('building_id');
-        $this->type = $this->getData('type_id');
         $this->unitDetails = UnitDetail::all();
     }
 
@@ -68,53 +66,53 @@ class FormContent extends UtilityClass
         $this->type = $distinctRecords->pluck('type_id')->unique()->toArray();
     }
 
-    function getBuildingForDropdown() {
-        $this->building = [];
-        $this->unit_nos = [];
+    // function getBuildingForDropdown() {
+    //     $this->building = [];
+    //     $this->unit_nos = [];
 
-        $filters = [
-            'phase_id' => $this->phase_id,
-            'type_id' => $this->type_id
-        ];
+    //     $filters = [
+    //         'phase_id' => $this->phase_id,
+    //         'type_id' => $this->type_id
+    //     ];
 
-        $distinctRecords = UnitDetail::where($filters)
-        ->distinct()
-        ->select('building_id')
-        ->get();
-        $this->building = $distinctRecords->pluck('building_id')->unique()->toArray();
+    //     $distinctRecords = UnitDetail::where($filters)
+    //     ->distinct()
+    //     ->select('building_id')
+    //     ->get();
+    //     $this->building = $distinctRecords->pluck('building_id')->unique()->toArray();
 
-        if (empty($myArray) || $this->building[0]==="") {
-            $filters['building_id'] = '';
-            $distinctRecords1 = UnitDetail::where($filters)
-            ->distinct()
-            ->select('unit_name')
-            ->get();
-            $this->unit_nos = $distinctRecords1->pluck('unit_name')->unique()->toArray();
-        }
-    }
+    //     if (empty($myArray) || $this->building[0]==="") {
+    //         $filters['building_id'] = '';
+    //         $distinctRecords1 = UnitDetail::where($filters)
+    //         ->distinct()
+    //         ->select('unit_name')
+    //         ->get();
+    //         $this->unit_nos = $distinctRecords1->pluck('unit_name')->unique()->toArray();
+    //     }
+    // }
 
-    function getUnitNoForDropdown () {
-        $filters = [
-            'phase_id' => $this->phase_id,
-            'type_id' => $this->type_id,
-            'building_id' => $this->building_id
-        ];
-        $distinctRecords1 = UnitDetail::where($filters)
-            ->distinct()
-            ->select('unit_name')
-            ->get();
-        $this->unit_nos = $distinctRecords1->pluck('unit_name')->unique()->toArray();
-    }
+    // function getUnitNoForDropdown () {
+    //     $filters = [
+    //         'phase_id' => $this->phase_id,
+    //         'type_id' => $this->type_id,
+    //         'building_id' => $this->building_id
+    //     ];
+    //     $distinctRecords1 = UnitDetail::where($filters)
+    //         ->distinct()
+    //         ->select('unit_name')
+    //         ->get();
+    //     $this->unit_nos = $distinctRecords1->pluck('unit_name')->unique()->toArray();
+    // }
 
-    function getOtherDropdowns () {
-        $distinctRecords = UnitDetail::where('unit_name', $this->unit_id)
-        ->distinct()
-        ->select('unit_name','project_id','phase_id','type_id','building_id')
-        ->get();
-        $this->phase_id = $distinctRecords->pluck('phase_id')->unique();
-        $this->type_id = $distinctRecords->pluck('type_id')->unique();
-        $this->building_id = $distinctRecords->pluck('building_id')->unique();
-    }
+    // function getOtherDropdowns () {
+    //     $distinctRecords = UnitDetail::where('unit_name', $this->unit_id)
+    //     ->distinct()
+    //     ->select('unit_name','project_id','phase_id','type_id','building_id')
+    //     ->get();
+    //     $this->phase_id = $distinctRecords->pluck('phase_id')->unique();
+    //     $this->type_id = $distinctRecords->pluck('type_id')->unique();
+    //     $this->building_id = $distinctRecords->pluck('building_id')->unique();
+    // }
 
     public function render()
     {
@@ -151,28 +149,154 @@ class FormContent extends UtilityClass
         return $rules;
     }
 
+    // Function to get the record type based on buyer type
+    private function getRecordType($buyerType)
+    {
+        switch ($buyerType) {
+            case 1:
+                return "Individual";
+            case 2:
+                return "Joint";
+            case 3:
+                return "Business";
+            default:
+                return "Unknown";
+        }
+    }
+
+    private function getImageAsBase64($path)
+    {
+        $filePath;
+        $base64String;
+
+        $search = '/storage/';
+
+        // Replace the string with an empty string
+        $filePath = str_replace($search, '', $path);
+        // Check if the file exists
+        if (Storage::disk('public')->exists($filePath)) {
+            // Read the file contents
+            $fileContents = Storage::disk('public')->get($filePath);
+
+            // Convert the file contents to base64
+            return base64_encode($fileContents);
+        } else {
+            // File does not exist
+            return null;
+            // You can handle this case as per your requirement
+        }
+
+    }
+
+    public function convertToBase64()
+    {
+        // Check if the file exists
+        if (Storage::exists($this->filePath)) {
+            // Read the file contents
+            $fileContents = Storage::get($this->filePath);
+
+            // Convert the file contents to base64
+            $this->base64String = base64_encode($fileContents);
+        } else {
+            // File does not exist
+            $this->base64String = null;
+            // You can handle this case as per your requirement
+        }
+    }
+
+
+    private function getFileExtension($path)
+    {
+        return pathinfo($path, PATHINFO_EXTENSION);
+    }
+
+    private function getDocumentType($path)
+    {
+        $extension = $this->getFileExtension($path);
+        dd($extension);
+        switch ($extension) {
+            case 'pdf':
+                return 'pdf';
+            case 'png':
+                return 'png';
+            case 'jpg':
+                return 'jpg';
+            case 'jpeg':
+                return 'jpeg';
+            // Add more cases as needed
+            default:
+                return 'unknown';
+        }
+    }
+
     public function submit()
     {
         $this->validate();
         //Store to Database
         $primaryBuyer = $this->savePrimaryBuyer();
-        $this->saveSecondaryBuyers($primaryBuyer);
-        
-        //Call Saleforce API Here
-
-
-        //Call Saleforce API Here
+        $secondaryBuyer = $this->saveSecondaryBuyers($primaryBuyer);
+        $data = [];
+        if ($primaryBuyer) {
+            $data = [
+                "data" => [
+                    "unit_details" => [
+                        "unitno" => $primaryBuyer['unit_no'] ?? null,
+                        "project" => $primaryBuyer['project'] ?? null,
+                        "building" => $primaryBuyer['building'] ?? null,
+                        "phase" => $primaryBuyer['phase']?? null
+                    ],
+                    "recordtype" => $this->getRecordType($primaryBuyer['buyer_type']),
+                    "number_of_owners" => count($secondaryBuyer) + 1,
+                    "account_Details" => [
+                        [
+                            "first_name" => explode(' ', $primaryBuyer['buyers_name'])[0], // Assuming first name is before the space
+                            "last_name" => explode(' ', $primaryBuyer['buyers_name'])[1], // Assuming last name is after the space
+                            "mobile_number" => $primaryBuyer['mobile_no'] ?? null,
+                            "email" => $primaryBuyer['email_id'] ?? null,
+                            "dob" => $primaryBuyer['dob'] ?? null,
+                            "emirates_id" => $primaryBuyer['emirates_id'] ?? null,
+                            "passport_number" => $primaryBuyer['passport_number'] ?? null,
+                            "passport_document" => $this->getImageAsBase64($primaryBuyer['passport_path']),
+                            "emirates_id_document" => $this->getImageAsBase64($primaryBuyer['emirates_id_path']),
+                            "mou_Document" => $this->getImageAsBase64($primaryBuyer['mou_doc_path']),
+                            "passport_document_type" => $this->getDocumentType($primaryBuyer['passport_path']),
+                            "emirates_id_document_type" => $this->getDocumentType($primaryBuyer['emirates_id_path']),
+                            "mou_Document_type" => $this->getDocumentType($primaryBuyer['mou_doc_path']),
+                            "tl_number" => $primaryBuyer['trade_license'] ?? null,
+                            "address" => $primaryBuyer['address'] ?? null,
+                            "country" => $primaryBuyer['country'] ?? null,
+                            "gender" => $primaryBuyer['gender'] ?? null,
+                            "non_resident" => ($primaryBuyer['buyer_type'] == 1) ? "true" : (($primaryBuyer['buyer_type'] == 2) ? "true" : "true")
+                        ]
+                    ]
+                ]
+            ];
+            
+        }
+        if ($secondaryBuyer) {
+            foreach ($secondaryBuyer as $buyer) {
+                $data['data']['account_Details'][] = [
+                    "first_name" => explode(' ', $buyer['buyers_name'])[0],
+                    "last_name" => explode(' ', $buyer['buyers_name'])[1],
+                    "gender" => $buyer['gender'] ?? null,
+                    "mobile_number" => $buyer['mobile_no'] ?? null,
+                    "email" => $buyer['email_id'] ?? null,
+                    "dob" => $buyer['dob'] ?? null,
+                    "address" => $buyer['address'] ?? null,
+                    "passport_number" => $buyer['passport_number'] ?? null,
+                    "country" => $buyer['country'] ?? null,
+                    "emirates_id" => $buyer['emirates_id'] ?? null,
+                    "non_resident" => ($primaryBuyer['buyer_type'] == 1) ? "true" : (($primaryBuyer['buyer_type'] == 2) ? "false" : "false")
+                ];
+            }
+        }
 
         $buyerData = $primaryBuyer;
+        $json = json_encode($data);
+        //Call Saleforce API Here
 
-        $json = json_encode($buyerData);
-
-        // dd($json);
-
-        // buyer_type
-        // buyer_id : 11
-        // project : null
-        // passport_path : "/storage/passport/11/doUGiv9kKgel7sdAWN5RyGcm5txoRKpPxfdJMdW7.pdf"
+        $sfResponse = SalesforceController::postData($json);
+        //Call Saleforce API Here
 
         $buyerData->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
         // $buyerData->amount = rand(0, 100);                // Update this with actual amount
@@ -187,7 +311,6 @@ class FormContent extends UtilityClass
     {
         $primaryBuyer = $this->saveBuyerData(0);
         if (!$primaryBuyer) {
-            // TODO: redirect to error page that says something went wrong and try again
             dd('something went wrong and try again');
         }
 
@@ -196,6 +319,7 @@ class FormContent extends UtilityClass
 
     private function saveSecondaryBuyers($primaryBuyer)
     {
+        $secondaryBuyers = [];
         foreach ($this->buyers as $index => $buyer) {
             if ($index > 0) {
                 $secondaryBuyer = $this->saveBuyerData($index);
@@ -204,8 +328,10 @@ class FormContent extends UtilityClass
                     'primary_buyer_id' => $primaryBuyer->buyer_id,
                     'secondary_buyer_id' => $secondaryBuyer->buyer_id,
                 ]);
+                array_push($secondaryBuyers,$secondaryBuyer);
             }
         }
+        return $secondaryBuyers;
     }
 
     private function handleEpgResponse($epgResponse, $buyer)
@@ -241,6 +367,14 @@ class FormContent extends UtilityClass
 
         if ($index === 0) {
             // Save additional details for primary buyer
+            $explodedData = explode('|', $this->unit_id);
+
+            // Assign values to different variables
+            $this->phase_id = $explodedData[0];
+            $this->type_id = $explodedData[1];
+            $this->building_id = $explodedData[2];
+            $this->unit_id = $explodedData[3];
+
             $buyer->project = $this->project[0];
             $buyer->phase = $this->phase_id;
             $buyer->type = $this->type_id;
