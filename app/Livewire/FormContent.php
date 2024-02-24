@@ -28,8 +28,9 @@ class FormContent extends UtilityClass
     public $building = [];
     public $type = [];
     public $passport_copy;
-    public $emirates_id;
+    public $emirates_id_document;
     public $mou_document;
+    public $primary_gender = 'Male';
 
     public $project_id;
     public $phase_id;
@@ -38,7 +39,7 @@ class FormContent extends UtilityClass
     public $type_id;
 
     protected $rules;
-    
+
     public $unitDetails = [];
 
     public function mount () {
@@ -56,7 +57,7 @@ class FormContent extends UtilityClass
     }
 
     function getTypeForDropdown() {
-        
+
         $this->type = [];
         $this->building = [];
         $this->unit_nos = [];
@@ -116,6 +117,7 @@ class FormContent extends UtilityClass
         $this->building_id = $distinctRecords->pluck('building_id')->unique();
     }
 
+
     public function render()
     {
         return view('livewire.form-content');
@@ -130,7 +132,7 @@ class FormContent extends UtilityClass
             'phase' => 'required',
             'unit_nos' => 'required',
             'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
-            'emirates_id' => 'required|file|mimes:pdf,jpg,png|max:5120',
+            'emirates_id_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
             'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
         ]);
 
@@ -143,9 +145,14 @@ class FormContent extends UtilityClass
 
         foreach ($this->buyers as $index => $buyer) {
             $rules["buyers.$index.name"] = "required|string";
+            $rules["buyers.$index.dob"] = "required|date";
+            $rules["buyers.$index.gender"] = "required|in:Male,Female";
             $rules["buyers.$index.mobile_no"] = "required|numeric";
             $rules["buyers.$index.email_id"] = "required|email";
             $rules["buyers.$index.address"] = "required|string";
+            $rules["buyers.$index.country"] = "required|string";
+            $rules["buyers.$index.passport_number"] = "required|string";
+            $rules["buyers.$index.emirates_id"] = "required|string";
         }
 
         return $rules;
@@ -157,7 +164,7 @@ class FormContent extends UtilityClass
         //Store to Database
         $primaryBuyer = $this->savePrimaryBuyer();
         $this->saveSecondaryBuyers($primaryBuyer);
-        
+
         //Call Saleforce API Here
 
 
@@ -234,9 +241,14 @@ class FormContent extends UtilityClass
                 'company' => 3,
             },
             'buyers_name' => $this->buyers[$index]['name'],
+            'dob' => $this->buyers[$index]['dob'],
+            'gender' => $this->buyers[$index]['gender'],
             'mobile_no' => $this->buyers[$index]['mobile_no'],
             'email_id' => $this->buyers[$index]['email_id'],
             'address' => $this->buyers[$index]['address'],
+            'country' => $this->buyers[$index]['country'],
+            'passport_number' => $this->buyers[$index]['passport_number'],
+            'emirates_id' => $this->buyers[$index]['emirates_id'],
         ]);
 
         if ($index === 0) {
@@ -249,7 +261,7 @@ class FormContent extends UtilityClass
 
             $buyer->passport_path = $this->saveFile($this->passport_copy, 'passport', $buyer->buyer_id);
             if ($this->selectedTab !== 'international') {
-                $buyer->emirates_id_path = $this->saveFile($this->emirates_id, 'emirates_id', $buyer->buyer_id);
+                $buyer->emirates_id_path = $this->saveFile($this->emirates_id_document, 'emirates_id_document', $buyer->buyer_id);
             }
             $buyer->mou_doc_path = $this->saveFile($this->mou_document, 'mou_document', $buyer->buyer_id);
             if ($this->selectedTab === 'company') {
@@ -259,8 +271,6 @@ class FormContent extends UtilityClass
             }
             $buyer->is_primary_buyer = 1;
             $buyer->order_id = date('Ymdh') . rand(0, 1000);
-
-            
 
         } else {
             // Secondary buyer, set is_primary_buyer to 0
@@ -293,9 +303,14 @@ class FormContent extends UtilityClass
         $this->buyers = [
             [
                 'name' => '',
+                'dob' => '',
+                'gender' => '',
                 'mobile_no' => '',
                 'email_id' => '',
                 'address' => '',
+                'country' => '',
+                'passport_number' => '',
+                'emirates_id' => ''
             ]
         ];
         $this->buyerCount = 0;
@@ -305,7 +320,7 @@ class FormContent extends UtilityClass
         $this->phase = null;
         $this->unit_nos = null;
         $this->passport_copy = null;
-        $this->emirates_id = null;
+        $this->emirates_id_document = null;
         $this->mou_document = null;
 
         // $this->resetErrorBag();
@@ -323,9 +338,14 @@ class FormContent extends UtilityClass
         array_splice($this->buyers, 1, 0, []);
         $this->buyers[] = [
             'name' => '',
+            'dob' => '',
+            'gender' => 'Male',
             'mobile_no' => '',
             'email_id' => '',
             'address' => '',
+            'country' => '',
+            'passport_number' => '',
+            'emirates_id' => ''
         ];
 
         $this->rules = $this->generateRules();

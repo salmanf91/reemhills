@@ -1,6 +1,6 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
-@section('content')
+@section('content') --}}
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -9,8 +9,8 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="card-essentials d-flex align-items-center">
-                            {{-- <div>
-                                <select wire:model="perPage" id="perPage">
+                            <div>
+                                <select wire:model.defer="perPage" id="perPage" wire:change="perPageChanged">
                                     <option>10</option>
                                     <option>25</option>
                                     <option>50</option>
@@ -20,7 +20,7 @@
                             </div>
                             <div class="ml-auto">
                                 <input wire:model="search" class="card-search" type="text" placeholder="Search...">
-                            </div> --}}
+                            </div>
                         </div>
                     </div>
 
@@ -86,4 +86,4 @@
             </div>
         </div>
     </div>
-@endsection
+{{-- @endsection --}}

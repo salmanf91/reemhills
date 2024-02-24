@@ -1,6 +1,6 @@
-@extends('layouts.app')
+{{-- @extends('layouts.app')
 
-@section('content')
+@section('content') --}}
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -92,13 +92,5 @@
         </div>
     </div>
 
-    <style>
-        .preview-image {
-            max-width: 100%;
-            cursor: pointer;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-    </style>
-@endsection
+
+{{-- @endsection --}}

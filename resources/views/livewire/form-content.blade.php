@@ -23,6 +23,28 @@
 
                     </div>
 
+                    <div class="form-group row">
+                        <label for="primary_dob" class="col-sm-3 col-form-label">Date of Birth</label>
+                        <div class="col-sm-9">
+                            <input wire:model="buyers.0.dob" type="date" class="form-control from-input" id="primary_dob" name="primary_dob" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Gender</label>
+                        <div class="col-sm-9">
+                            <!-- Radio buttons for gender -->
+                            <div class="form-check form-check-inline">
+                                <input wire:model="buyers.0.gender" class="form-check-input" type="radio" id="primary_gender_male" name="primary_gender_male" value="Male">
+                                <label class="form-check-label" for="gender_male_primary">Male</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input wire:model="buyers.0.gender" class="form-check-input" type="radio" id="primary_gender_female" name="primary_gender_female" value="Female">
+                                <label class="form-check-label" for="gender_female_primary">Female</label>
+                            </div>
+                        </div>
+                    </div>
+
                     @if($selectedTab == 'company')
 
                     <div class="form-group row">
@@ -64,6 +86,31 @@
                             placeholder="Type Address" required></textarea>
                         </div>
                     </div>
+
+                    <div class="form-group row">
+                        <label for="primary_country" class="col-sm-3 col-form-label">Country</label>
+                        <div class="col-sm-9">
+                            <!-- Replace input text with select if needed -->
+                            <input wire:model="buyers.0.country" type="text" class="form-control from-input" id="primary_country" name="primary_country" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="primary_passport_number" class="col-sm-3 col-form-label">Passport Number</label>
+                        <div class="col-sm-9">
+                            <input wire:model="buyers.0.passport_number" type="text" class="form-control from-input" id="primary_passport_number" name="primary_passport_number" required>
+                        </div>
+                    </div>
+
+                    @if($selectedTab == 'national' || $selectedTab == 'company')
+                    <div class="form-group row">
+                        <label for="primary_emirates_id" class="col-sm-3 col-form-label">Emirates ID</label>
+                        <div class="col-sm-9">
+                            <input wire:model="buyers.0.emirates_id" type="text" class="form-control from-input" id="primary_emirates_id" name="primary_emirates_id" required>
+                        </div>
+                    </div>
+                    @endif
+
                     <div class="form-group row">
                         <div class="col-sm-9 offset-sm-3">
                             <button type="button" wire:click="addBuyer" class="btn btn-success">Add Buyer {{ $buyerCount + 1 }}</button>
@@ -77,6 +124,28 @@
                                 <label for="buyers_name_{{ $index }}" class="col-sm-3 col-form-label">Buyer's Name</label>
                                 <div class="col-sm-9">
                                     <input wire:model="buyers.{{ $index }}.name" type="text" class="form-control from-input" id="buyers_name_{{ $index }}" name="buyers_name[]" placeholder="Type Buyer's Name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="buyers_dob_{{ $index }}" class="col-sm-3 col-form-label">Date of Birth</label>
+                                <div class="col-sm-9">
+                                    <input wire:model="buyers.{{ $index }}.dob" type="date" class="form-control from-input" id="buyers_dob_{{ $index }}" name="buyers_dob[]" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Gender</label>
+                                <div class="col-sm-9">
+                                    <!-- Radio buttons for gender -->
+                                    <div class="form-check form-check-inline">
+                                        <input wire:model="buyers.{{ $index }}.gender" class="form-check-input" type="radio" id="buyers_gender_male_{{ $index }}" name="buyers_gender_{{ $index }}" value="Male">
+                                        <label class="form-check-label" for="gender_male_{{ $index }}">Male</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input wire:model="buyers.{{ $index }}.gender" class="form-check-input" type="radio" id="buyers_gender_female_{{ $index }}" name="buyers_gender_{{ $index }}" value="Female">
+                                        <label class="form-check-label" for="gender_female_{{ $index }}">Female</label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -100,6 +169,30 @@
                                     <textarea wire:model="buyers.{{ $index }}.address" class="form-control from-input" id="buyers_address_{{ $index }}" name="buyers_address[]" placeholder="Type Address" required></textarea>
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <label for="buyers_country_{{ $index }}" class="col-sm-3 col-form-label">Country</label>
+                                <div class="col-sm-9">
+                                    <!-- Replace input text with select if needed -->
+                                    <input wire:model="buyers.{{ $index }}.country" type="text" class="form-control from-input" id="buyers_country_{{ $index }}" name="buyers_country[]">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="buyers_passport_number_{{ $index }}" class="col-sm-3 col-form-label">Passport Number</label>
+                                <div class="col-sm-9">
+                                    <input wire:model="buyers.{{ $index }}.passport_number" type="text" class="form-control from-input" id="buyers_passport_number_{{ $index }}" name="buyers_passport_number[]">
+                                </div>
+                            </div>
+
+                            @if($selectedTab == 'national' || $selectedTab == 'company')
+                            <div class="form-group row">
+                                <label for="buyers_emirates_id_{{ $index }}" class="col-sm-3 col-form-label">Emirates ID</label>
+                                <div class="col-sm-9">
+                                    <input wire:model="buyers.{{ $index }}.emirates_id" type="text" class="form-control from-input" id="buyers_emirates_id_{{ $index }}" name="buyers_emirates_id[]">
+                                </div>
+                            </div>
+                            @endif
                         </div>
                         @endif
                     @endforeach
@@ -114,22 +207,22 @@
                                 @forelse ($project as $item)
                                 <option value="{{$item}}">{{$item}}</option>
                                 @empty
-                                
+
                                 @endforelse
                             </select>
                         </div>
                     </div>
 
-                    
+
                     <div class="form-group row">
-                        <label for="phase" class="col-sm-3 col-form-label">Phase</label>
+                        <label for="unit_no" class="col-sm-3 col-form-label">Type</label>
                         <div class="col-sm-9">
                             <select wire:model="phase_id" wire:change="getTypeForDropdown()" class="form-control from-select" id="phase_id" name="phase" required>
                             <option selected="selected">Select Phase</option>
                                 @forelse ($phase as $item)
                                 <option value="{{$item}}">{{$item}}</option>
                                 @empty
-                                
+
                                 @endforelse
                             </select>
                         </div>
@@ -143,7 +236,7 @@
                                 @forelse ($type as $item)
                                 <option value="{{$item}}">{{$item}}</option>
                                 @empty
-                                
+
                                 @endforelse
                          </select>
                          </div>
@@ -157,7 +250,7 @@
                                 @forelse ($building as $item)
                                 <option value="{{$item}}">{{$item}}</option>
                                 @empty
-                                
+
                                 @endforelse
                          </select>
                          </div>
@@ -199,9 +292,9 @@
                     @if($selectedTab == 'national' || $selectedTab == 'company')
                     <!-- Render Emirates ID input for National and Company tabs -->
                     <div class="form-group row">
-                        <label for="emirates_id" class="col-sm-3 col-form-label">Emirates ID</label>
+                        <label for="emirates_id" class="col-sm-3 col-form-label">Emirates ID Document</label>
                         <div class="col-sm-9">
-                            <input wire:model="emirates_id" type="file" class="form-control from-input form-file" id="emirates_id" name="emirates_id" required>
+                            <input wire:model="emirates_id_document" type="file" class="form-control from-input form-file" id="emirates_id_document" name="emirates_id_document" required>
                         </div>
                     </div>
                     @endif

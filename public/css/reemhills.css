@@ -108,6 +108,15 @@ body {
     border-radius: 10px !important;
 }
 
+.btn-save {
+    padding:8px !important;
+    color: #ffffff !important;
+    float: right;
+    width:10%;
+    background-color: #D73547 !important;
+    border-radius: 10px !important;
+}
+
 /*** User Form ***/
 
 .user-left-block {
@@ -291,5 +300,22 @@ ul.nav.flex-column {
 .primary-buyer-row {
     background-color: #EFAA69;
 }
+
+.preview-image {
+    max-width: 100%;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.admin-list {
+    padding: 25px 0px;
+}
+
+.admin-form {
+    min-height: auto;
+}
+
 
 
