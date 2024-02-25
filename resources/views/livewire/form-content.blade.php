@@ -213,16 +213,16 @@
                         </div>
                     </div>
 
-
-                    <div class="form-group row">
-                        <label for="unit_no" class="col-sm-3 col-form-label">Type</label>
+                    
+                    {{-- <div class="form-group row">
+                        <label for="phase" class="col-sm-3 col-form-label">Phase</label>
                         <div class="col-sm-9">
                             <select wire:model="phase_id" wire:change="getTypeForDropdown()" class="form-control from-select" id="phase_id" name="phase" required>
                             <option selected="selected">Select Phase</option>
                                 @forelse ($phase as $item)
                                 <option value="{{$item}}">{{$item}}</option>
                                 @empty
-
+                                
                                 @endforelse
                             </select>
                         </div>
@@ -267,6 +267,19 @@
                                 @endforelse
                          </select>
                          </div>
+                    </div> --}}
+
+                    <div class="form-group row"  >
+                        <label for="unit_no" class="col-sm-3 col-form-label">Unit Number</label>
+                        <div class="col-sm-9">
+                        <select wire:model="unit_id"  class="form-control from-select" id="unit_no" name="unit_no" required>
+                            <option selected="selected">Select Phase</option>
+                                @forelse ($unitDetails as $unitDetail)
+                                <option value="{{ $unitDetail->phase_id . '|' . $unitDetail->type_id . '|' . $unitDetail->building_id . '|' . $unitDetail->unit_name }}">{{ $unitDetail->phase_id . ' | ' . $unitDetail->type_id . ' | ' . $unitDetail->building_id . ' | ' . $unitDetail->unit_name }}</option>
+                                @empty
+                                @endforelse
+                         </select>
+                        </div>
                     </div>
 
                     <div class="form-group row" >
@@ -324,17 +337,21 @@
 </div>
 
 @push('scripts')
-
 <script>
     $(document).ready(function () {
-        $('#unit_name2').select2();
+        $('#unit_no').select2();
+    });
+    $('#unit_no').on('change', function (e) {
+        var data = $('#unit_no').select2("val");
+        @this.set('unit_id', data);
     });
 </script>
-
 @endpush
 
 <script>
     document.addEventListener('livewire:load', function () {
+        consloe.log("here");
+        $('#unit_name2').select2();
         Livewire.on('dismissedErrorMessage', () => {
             Livewire.emit('resetErrorBag');
         });

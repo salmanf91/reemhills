@@ -7,9 +7,22 @@ use GuzzleHttp\Client;
 
 class SalesforceController extends Controller
 {
-    public function getToken()
+    public static function getToken()
     {
-        $client = new Client();
+        $client = new \GuzzleHttp\Client([
+            'verify' => false
+        ]);
+        
+        // try {
+        //     $response = $client->post('https://test.salesforce.com/services/oauth2/token?grant_type=password'
+        //         . '&client_id=3MVG9buXpECUESHjyehPOUn_8aSfVKoQzcXCP6J4z3dPTfQU1HQx2D6mMxRk8ZJhbdEOH7sKvjGYyzJvApKGL'
+        //         . '&client_secret=CFD17539159B232D752C5FBA1002FD05D8BA30D4FDBF94DBDB04F8300C926E26'
+        //         . '&username=deb@aphidas.com.rdc.prod.albarari'
+        //         . '&password=Aphidas@20303kDFvbeoeJBaf8XX7XRaqnD7g'
+        //     );
+    // public function getToken()
+    // {
+    //     $client = new Client();
         
         try {
             $response = $client->post('SALESFORCE_AUTH_URL', [
@@ -28,11 +41,14 @@ class SalesforceController extends Controller
             return $token;
             
         } catch (\Exception $e) {
-            // Handle exception
+            dd($e);
             return null;
         }
     }
 
+    public static function postData($data)
+    {
+        $token = self::getToken();
     public function postData(Request $request)
     {
         $token = $this->getToken();
@@ -46,11 +62,11 @@ class SalesforceController extends Controller
                         'Authorization' => 'Bearer ' . $token,
                         'Content-Type' => 'application/json'
                     ],
-                    'json' => $request->all()
+                    'json' => $data,
+                    'verify' => false
                 ]);
                 
                 $data = json_decode($response->getBody()->getContents(), true);
-                
                 // Process response data as needed
                 
                 return response()->json($data);
