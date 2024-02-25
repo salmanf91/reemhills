@@ -44,7 +44,21 @@ class FormContent extends UtilityClass
     
     public $unitDetails = [];
 
-    public function mount () {        
+    public function mount () {
+        $sfController = new SalesforceController();
+        // $data = [
+        //     'name' => 'John Doe',
+        //     'age' => 30,
+        //     'email' => 'john@example.com',
+        //     'address' => [
+        //         'street' => '123 Main St',
+        //         'city' => 'Anytown',
+        //         'country' => 'USA'
+        //     ],
+        //     'tags' => ['php', 'json', 'example']
+        // ];
+        // $jsonObject = json_encode($data, JSON_PRETTY_PRINT);
+        // dd($sfController->postData($jsonObject));
         $this->project = $this->getData('project_id');
         $this->unitDetails = UnitDetail::all();
     }
@@ -288,7 +302,6 @@ class FormContent extends UtilityClass
                     ]
                 ]
             ];
-            
         }
         if ($secondaryBuyer) {
             foreach ($secondaryBuyer as $buyer) {
@@ -314,7 +327,8 @@ class FormContent extends UtilityClass
         //Call Saleforce API Here
 
         $buyerData = $primaryBuyer;
-        $json = json_encode($data);
+        $json = json_encode($data, JSON_PRETTY_PRINT);
+        dd($json);
         //Call Saleforce API Here
 
         $sfResponse = SalesforceController::postData($json);

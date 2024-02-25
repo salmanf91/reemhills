@@ -7,32 +7,21 @@ use GuzzleHttp\Client;
 
 class SalesforceController extends Controller
 {
+    
     public static function getToken()
     {
-        $client = new \GuzzleHttp\Client([
-            'verify' => false
-        ]);
-        
-        // try {
-        //     $response = $client->post('https://test.salesforce.com/services/oauth2/token?grant_type=password'
-        //         . '&client_id=3MVG9buXpECUESHjyehPOUn_8aSfVKoQzcXCP6J4z3dPTfQU1HQx2D6mMxRk8ZJhbdEOH7sKvjGYyzJvApKGL'
-        //         . '&client_secret=CFD17539159B232D752C5FBA1002FD05D8BA30D4FDBF94DBDB04F8300C926E26'
-        //         . '&username=deb@aphidas.com.rdc.prod.albarari'
-        //         . '&password=Aphidas@20303kDFvbeoeJBaf8XX7XRaqnD7g'
-        //     );
-    // public function getToken()
-    // {
-    //     $client = new Client();
-        
+        $client = new Client();
+
         try {
-            $response = $client->post('SALESFORCE_AUTH_URL', [
-                'json' => [
+            $response = $client->post(env('SALESFORCE_TOKEN_URL'), [
+                'form_params' => [
                     'grant_type' => 'password',
-                    'client_id' => '3MVG9buXpECUESHjyehPOUn_8aSfVKoQzcXCP6J4z3dPTfQU1HQx2D6mMxRk8ZJhbdEOH7sKvjGYyzJvApKGL',
-                    'client_secret' => 'CFD17539159B232D752C5FBA1002FD05D8BA30D4FDBF94DBDB04F8300C926E26',
-                    'username' => 'deb@aphidas.com.rdc.prod.albarari',
-                    'password' => 'Aphidas@20303kDFvbeoeJBaf8XX7XRaqnD7g'
-                ]
+                    'client_id' => env('SALESFORCE_CLIENT_ID'),
+                    'client_secret' => env('SALESFORCE_CLIENT_SECRET'),
+                    'username' => env('SALESFORCE_USERNAME'),
+                    'password' => env('SALESFORCE_PASSWORD')
+                ],
+                'verify' => false
             ]);
             
             $data = json_decode($response->getBody()->getContents(), true);
@@ -41,7 +30,6 @@ class SalesforceController extends Controller
             return $token;
             
         } catch (\Exception $e) {
-            dd($e);
             return null;
         }
     }
@@ -49,15 +37,13 @@ class SalesforceController extends Controller
     public static function postData($data)
     {
         $token = self::getToken();
-    public function postData(Request $request)
-    {
-        $token = $this->getToken();
-        
+
         if ($token) {
             $client = new Client();
             
             try {
-                $response = $client->post('https://alqudra--albarari.sandbox.my.salesforce.com/services/apexrest/rdc', [
+
+                $response = $client->post(env('SALESFORCE_API_URL'), [
                     'headers' => [
                         'Authorization' => 'Bearer ' . $token,
                         'Content-Type' => 'application/json'
