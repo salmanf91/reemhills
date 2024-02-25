@@ -16,7 +16,8 @@
                 </div>
                 <!-- Right Side: Logout Button -->
                 <div class="col-md-8 text-right">
-                        <button wire:click="logout" class="btn btn-submit">Logout</button>
+                        <a href="{{ route('logout') }}" class="btn btn-submit">Logout</a>
+                        {{-- <button wire:click="logout" class="btn btn-submit">Logout</button> --}}
                 </div>
             </div>
         </div>

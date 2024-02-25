@@ -1,3 +1,7 @@
+@php
+$slot =  isset($slot) ? $slot : false;
+@endphp
+
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -30,7 +34,11 @@
             <div class="row">
                 @include('layouts.sidebar')
                 <main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4">
-                    @yield('content')
+                    {{ $slot }}
+                   {{-- @yield('content') --}}
+                    {{-- @if ($slot) --}}
+                        {{-- {{ $slot }} --}}
+                    {{-- @endif --}}
                 </main>
             </div>
         </div>

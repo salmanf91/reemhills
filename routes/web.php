@@ -5,10 +5,12 @@ use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\Buyerdetails;
 use App\Livewire\Admin\ManageAmount;
 use App\Http\Controllers\EpgPaymentController;
+use App\Http\Controllers\AuthController;
 
 Route::middleware(['superadmin'])->group(function () {
     Route::get('/resale-requests', Dashboard::class)->name('admin.resale-requests');
     Route::get('/buyer-details-{id}', Buyerdetails::class)->name('buyer.details');
+    Route::get('/manage-amount', ManageAmount::class)->name('admin.manage-amount');
 });
 
 Route::get('/', function () {
@@ -23,3 +25,6 @@ Route::get('/login', function () {
 });
 
 Route::post('/payment/finalization', [EpgPaymentController::class, 'finalizePayment']);
+
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
