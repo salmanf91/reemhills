@@ -25,9 +25,14 @@ class Buyer extends Model
     protected $fillable = [
         'buyer_type',
         'buyers_name',
+        'dob',
+        'gender',
         'mobile_no',
         'email_id',
         'address',
+        'country',
+        'passport_number',
+        'emirates_id',
         'project',
         'phase',
         'unit_no',
@@ -39,7 +44,11 @@ class Buyer extends Model
         'trade_license_path',
         'building',
         'type',
-        'order_id'
+        'order_id',
+        'transaction_id',
+        'epg_json_response',
+        'building',
+        'type'
     ];
 
     /**

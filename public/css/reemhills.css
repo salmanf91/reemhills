@@ -317,5 +317,35 @@ ul.nav.flex-column {
     min-height: auto;
 }
 
+.payment-head {
+    font-size: 30px;
+    color: #B92930;
+    line-height: 45px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.payment-block-left {
+    min-height: 100vh;
+}
+
+.payment-block-right {
+    min-height: auto;
+    text-align:center;
+}
+
+.payment-message {
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.payment-note {
+    color: #888;
+    font-style: italic;
+    text-align: center;
+}
+
 
 

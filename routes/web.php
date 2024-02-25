@@ -6,6 +6,7 @@ use App\Livewire\Admin\Buyerdetails;
 use App\Livewire\Admin\ManageAmount;
 use App\Http\Controllers\EpgPaymentController;
 use App\Http\Controllers\AuthController;
+use App\Livewire\PaymentResponseHandler;
 
 Route::middleware(['superadmin'])->group(function () {
     Route::get('/resale-requests', Dashboard::class)->name('admin.resale-requests');
@@ -21,6 +22,12 @@ Route::get('/', function () {
 Route::get('/login', function () {
     return view('welcome', [
         'livewireComponent' => 'super-admin-login',
+    ]);
+});
+
+Route::get('/thankyou', function () {
+    return view('welcome', [
+        'livewireComponent' => 'payment-response-handler',
     ]);
 });
 
