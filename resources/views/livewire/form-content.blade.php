@@ -271,7 +271,7 @@
 
                     <div class="form-group row"  >
                         <label for="unit_no" class="col-sm-3 col-form-label">Unit Number</label>
-                        <div class="col-sm-9">
+                        <div class="col-sm-9" wire:ignore>
                         <select wire:model="unit_id"  class="form-control from-select" id="unit_no" name="unit_no" required>
                             <option selected="selected">Select Phase</option>
                                 @forelse ($unitDetails as $unitDetail)
@@ -280,19 +280,6 @@
                                 @endforelse
                          </select>
                         </div>
-                    </div>
-
-                    <div class="form-group row" >
-                        <label for="unit_no_2" class="col-sm-3 col-form-label">Unit Number</label>
-                        <div class="col-sm-9">
-                        <select wire:model="unit_name2"  class="form-control from-select" id="unit_name2" name="unit_name2" required>
-                            <option selected="selected">Select Phase</option>
-                                @forelse ($unitDetails as $unitDetail)
-                                <option value="{{$unitDetail->id}}">{{ $unitDetail->phase_id . ' | ' . $unitDetail->type_id . ' | ' . $unitDetail->building_id . ' | ' . $unitDetail->unit_name }}</option>
-                                @empty
-                                @endforelse
-                         </select>
-                         </div>
                     </div>
 
                     <div class="form-group row">
