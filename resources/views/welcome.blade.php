@@ -18,8 +18,8 @@
         @livewire('resale-request')
     @elseif(request()->path() === 'login')
         @livewire('super-admin-login')
-    @elseif(request()->path() === 'createPost')
-        @livewire('create-post')
+    @elseif(request()->path() === 'thankyou')
+        @livewire('payment-response-handler')
     @endif
 </div>
 
