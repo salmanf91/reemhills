@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\Buyer; // Add this import
-use App\Models\BuyerRelationship; // Add this import
+use App\Models\Buyer;
+use App\Models\BuyerRelationship; 
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -47,7 +47,7 @@ class FormContent extends UtilityClass
     public function mount () {
         $sfController = new SalesforceController();
         // $data = [
-        //     'name' => 'John Doe',
+        //     'name' => 'John Doe', 
         //     'age' => 30,
         //     'email' => 'john@example.com',
         //     'address' => [
