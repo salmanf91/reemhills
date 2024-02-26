@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\Buyer; // Add this import
-use App\Models\BuyerRelationship; // Add this import
+use App\Models\Buyer;
+use App\Models\BuyerRelationship; 
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
