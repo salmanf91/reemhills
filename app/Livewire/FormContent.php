@@ -47,7 +47,7 @@ class FormContent extends UtilityClass
     public function mount () {
         $sfController = new SalesforceController();
         // $data = [
-        //     'name' => 'John Doe',
+        //     'name' => 'John Doe', 
         //     'age' => 30,
         //     'email' => 'john@example.com',
         //     'address' => [
