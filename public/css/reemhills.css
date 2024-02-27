@@ -347,5 +347,12 @@ ul.nav.flex-column {
     text-align: center;
 }
 
+.green {
+    color:#5BC089;
+}
+
+.red {
+    color: #B92930;
+}
 
 

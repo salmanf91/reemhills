@@ -25,7 +25,13 @@ Route::get('/login', function () {
     ]);
 });
 
-Route::get('/thankyou', function () {
+Route::get('thankyou/success', function () {
+    return view('welcome', [
+        'livewireComponent' => 'payment-response-handler',
+    ]);
+});
+
+Route::get('thankyou/error', function () {
     return view('welcome', [
         'livewireComponent' => 'payment-response-handler',
     ]);
