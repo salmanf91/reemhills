@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use App\Models\{Buyer, BuyerRelationship, BuyerPayment};
+use App\Models\{Buyer, BuyerRelationship, BuyerPayment, GenericAttribute};
+use App\Utilities\EmailUtility;
+use Illuminate\Support\Facades\Mail;
 
 class EpgPaymentController extends Controller
 {
@@ -29,6 +31,8 @@ class EpgPaymentController extends Controller
     private static function prepareJsonData($customerData)
     {
         $orderId = $customerData->order_id ?? (date('Ymdh') . rand(0, 1000));
+        $amount = GenericAttribute::where('generic_key', 'amount')->first();
+        $amount = $amount->generic_value ?? 1;
         return [
             'Registration' => [
                 'Currency' => config('epg.reg_currency'),
@@ -38,7 +42,7 @@ class EpgPaymentController extends Controller
                 'Store' => config('epg.reg_store'),
                 'Terminal' => config('epg.reg_terminal'),
                 'Channel' => config('epg.reg_channel'),
-                'Amount' => 10,
+                'Amount' => $amount,
                 'Customer' => config('epg.reg_customer'),
                 'OrderName' => config('epg.reg_order_name'),
                 'UserName' => config('epg.username'),
@@ -122,11 +126,26 @@ class EpgPaymentController extends Controller
     {
         if(isset($epgResponse->Transaction->ResponseCode) && $epgResponse->Transaction->ResponseCode == BuyerPayment::PAYMENT_STATUS_SUCCESS){
             $this->createBuyerPayment($epgResponse, $buyer);
-        }elseif(isset($epgResponse->Transaction)){
-            $this->createBuyerPayment($epgResponse, $buyer);
-        }else{
-            //TODO: redirect to error page that payment failed
-            dd('Payment failed');
+            
+            $data = [
+                'to' => $buyer['email_id'] ?? '',
+                'subject' => 'Confirmation: Your Payment Was Successfully Processed',
+                'view' => 'emails.payment_confirmation',
+            ];
+            $data['details'] = $buyer;
+            Mail::to($data['to'])->send(new EmailUtility($data));
+        }else {
+            if(isset($epgResponse->Transaction)){
+                $this->createBuyerPayment($epgResponse, $buyer);
+            }
+
+            $data = [
+                'to' => $buyer['email_id'] ?? '',
+                'subject' => 'Payment Unsuccessful/Error Notification',
+                'view' => 'emails.payment_error',
+            ];
+            $data['details'] = $buyer;
+            Mail::to($data['to'])->send(new EmailUtility($data));
         }
 
         return;
