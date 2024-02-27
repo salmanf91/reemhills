@@ -26,7 +26,7 @@
                     <div class="form-group row">
                         <label for="primary_dob" class="col-sm-3 col-form-label">Date of Birth</label>
                         <div class="col-sm-9">
-                            <input wire:model="buyers.0.dob" type="date" class="form-control from-input" id="primary_dob" name="primary_dob" required>
+                            <input wire:model="buyers.0.dob" type="date" class="form-control from-input" id="primary_dob" name="primary_dob" max="{{ \Carbon\Carbon::yesterday()->toDateString() }}" min="{{ \Carbon\Carbon::now()->subYears(80)->toDateString() }}" required>
                         </div>
                     </div>
 
@@ -61,6 +61,7 @@
                             <input wire:model="company_tl_no" type="text" class="form-control from-input" id="tl_no" name="tl_no" placeholder="Type TL Number" required>
                         </div>
                     </div>
+                    
                     @endif
 
                     <div class="form-group row">
@@ -130,7 +131,7 @@
                             <div class="form-group row">
                                 <label for="buyers_dob_{{ $index }}" class="col-sm-3 col-form-label">Date of Birth</label>
                                 <div class="col-sm-9">
-                                    <input wire:model="buyers.{{ $index }}.dob" type="date" class="form-control from-input" id="buyers_dob_{{ $index }}" name="buyers_dob[]" required>
+                                    <input wire:model="buyers.{{ $index }}.dob" type="date" class="form-control from-input" id="buyers_dob_{{ $index }}" name="buyers_dob[]" max="{{ \Carbon\Carbon::yesterday()->toDateString() }}" min="{{ \Carbon\Carbon::now()->subYears(80)->toDateString() }}" required>
                                 </div>
                             </div>
 

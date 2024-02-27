@@ -2,18 +2,15 @@
 
 namespace App\Livewire;
 
-use App\Models\Buyer; // Add this import
-use App\Models\BuyerRelationship; // Add this import
+use App\Models\Buyer;
+use App\Models\BuyerRelationship;
+use App\Models\UnitDetail;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
-use App\Livewire\UtilityClass;
 use App\Http\Controllers\EpgPaymentController;
 use App\Http\Controllers\SalesforceController;
-use App\Models\UnitDetail;
-use function Livewire\Volt\{on};
-use Illuminate\Support\Facades\File;
 
 class FormContent extends UtilityClass
 {
@@ -45,20 +42,6 @@ class FormContent extends UtilityClass
     public $unitDetails = [];
 
     public function mount () {
-        $sfController = new SalesforceController();
-        // $data = [
-        //     'name' => 'John Doe',
-        //     'age' => 30,
-        //     'email' => 'john@example.com',
-        //     'address' => [
-        //         'street' => '123 Main St',
-        //         'city' => 'Anytown',
-        //         'country' => 'USA'
-        //     ],
-        //     'tags' => ['php', 'json', 'example']
-        // ];
-        // $jsonObject = json_encode($data, JSON_PRETTY_PRINT);
-        // dd($sfController->postData($jsonObject));
         $this->project = $this->getData('project_id');
         $this->unitDetails = UnitDetail::all();
     }
@@ -151,8 +134,7 @@ class FormContent extends UtilityClass
 
         $rules = array_merge($rules, [
             'project' => 'required',
-            'phase' => 'required',
-            'unit_nos' => 'required',
+            'unit_id' => 'required',
             'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
             'emirates_id_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
             'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
@@ -164,7 +146,7 @@ class FormContent extends UtilityClass
     private function generateRules()
     {
         $rules = [];
-
+        
         foreach ($this->buyers as $index => $buyer) {
             $rules["buyers.$index.name"] = "required|string";
             $rules["buyers.$index.dob"] = "required|date";
@@ -244,7 +226,7 @@ class FormContent extends UtilityClass
     private function getDocumentType($path)
     {
         $extension = $this->getFileExtension($path);
-        dd($extension);
+
         switch ($extension) {
             case 'pdf':
                 return 'pdf';
@@ -268,6 +250,7 @@ class FormContent extends UtilityClass
         $secondaryBuyer = $this->saveSecondaryBuyers($primaryBuyer);
         $data = [];
         if ($primaryBuyer) {
+            $nameParts = explode(' ', $primaryBuyer['buyers_name']);
             $data = [
                 "data" => [
                     "unit_details" => [
@@ -280,8 +263,8 @@ class FormContent extends UtilityClass
                     "number_of_owners" => count($secondaryBuyer) + 1,
                     "account_Details" => [
                         [
-                            "first_name" => explode(' ', $primaryBuyer['buyers_name'])[0], // Assuming first name is before the space
-                            "last_name" => explode(' ', $primaryBuyer['buyers_name'])[1], // Assuming last name is after the space
+                            "first_name" => $nameParts[0], // Assuming first name is before the space
+                            "last_name" => count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : null,  // Assuming last name is after the space
                             "mobile_number" => $primaryBuyer['mobile_no'] ?? null,
                             "email" => $primaryBuyer['email_id'] ?? null,
                             "dob" => $primaryBuyer['dob'] ?? null,
@@ -297,7 +280,7 @@ class FormContent extends UtilityClass
                             "address" => $primaryBuyer['address'] ?? null,
                             "country" => $primaryBuyer['country'] ?? null,
                             "gender" => $primaryBuyer['gender'] ?? null,
-                            "non_resident" => ($primaryBuyer['buyer_type'] == 1) ? "true" : (($primaryBuyer['buyer_type'] == 2) ? "true" : "true")
+                            "non_resident" => ($primaryBuyer['buyer_type'] == 1) ? "false" : (($primaryBuyer['buyer_type'] == 2) ? "true" : "true")
                         ]
                     ]
                 ]
@@ -305,9 +288,11 @@ class FormContent extends UtilityClass
         }
         if ($secondaryBuyer) {
             foreach ($secondaryBuyer as $buyer) {
+                $nameParts = explode(' ', $buyer['buyers_name']);
+
                 $data['data']['account_Details'][] = [
-                    "first_name" => explode(' ', $buyer['buyers_name'])[0],
-                    "last_name" => explode(' ', $buyer['buyers_name'])[1],
+                    "first_name" => $nameParts[0],
+                    "last_name" => count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : null,
                     "gender" => $buyer['gender'] ?? null,
                     "mobile_number" => $buyer['mobile_no'] ?? null,
                     "email" => $buyer['email_id'] ?? null,
@@ -316,7 +301,7 @@ class FormContent extends UtilityClass
                     "passport_number" => $buyer['passport_number'] ?? null,
                     "country" => $buyer['country'] ?? null,
                     "emirates_id" => $buyer['emirates_id'] ?? null,
-                    "non_resident" => ($primaryBuyer['buyer_type'] == 1) ? "true" : (($primaryBuyer['buyer_type'] == 2) ? "false" : "false")
+                    "non_resident" => ($primaryBuyer['buyer_type'] == 1) ? "false" : (($primaryBuyer['buyer_type'] == 2) ? "true" : "true")
                 ];
             }
         }
@@ -327,11 +312,10 @@ class FormContent extends UtilityClass
         //Call Saleforce API Here
 
         $buyerData = $primaryBuyer;
-        $json = json_encode($data, JSON_PRETTY_PRINT);
-        dd($json);
+        $json = json_encode($data);
         //Call Saleforce API Here
 
-        $sfResponse = SalesforceController::postData($json);
+        $sfResponse = SalesforceController::postData($data);
         //Call Saleforce API Here
 
         $buyerData->buyers_name = 'Demo Merchant';  // Update this with actual merchant name
