@@ -47,13 +47,14 @@ class SalesforceController extends Controller
             return $token;
 
         } catch (\Exception $e) {
-            return null;
+            return $e;
         }
     }
 
     public static function postData($data)
     {
-        // dd($data);
+        
+        
         $token = self::getToken();
         if ($token) {
             $client = new Client();
@@ -69,15 +70,14 @@ class SalesforceController extends Controller
                     'json' => $data,
                     'verify' => false
                 ]);
-
+                dd($response);
                 $data = json_decode($response->getBody()->getContents(), true);
-
+                dd($data);
                 // Process response data as needed
                 return response()->json($data);
 
             } catch (\Exception $e) {
-
-                // Handle exception
+                dd($e);
                 return response()->json(['error' => $e->getMessage()], 500);
             }
         } else {

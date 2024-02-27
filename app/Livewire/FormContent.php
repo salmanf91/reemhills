@@ -32,12 +32,14 @@ class FormContent extends UtilityClass
     public $emirates_id_document;
     public $mou_document;
     public $primary_gender = 'Male';
-
+    public $company_trade_license;
     public $project_id;
     public $phase_id;
     public $unit_id;
     public $building_id;
     public $type_id;
+    public $company_name;
+    public $company_tl_no;
 
     protected $rules;
 
@@ -140,14 +142,32 @@ class FormContent extends UtilityClass
     {
         $rules = $this->generateRules();
 
-        $rules = array_merge($rules, [
-            'project' => 'required',
-            'unit_id' => 'required',
-            'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
-            'emirates_id_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
-            'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
-        ]);
-
+        if ($this->selectedTab=='national') {
+            $rules = array_merge($rules, [
+                'project' => 'required',
+                'unit_id' => 'required',
+                'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
+                'emirates_id_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
+                'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
+            ]);    
+        } 
+        else if ($this->selectedTab=='international') {
+            $rules = array_merge($rules, [
+                'project' => 'required',
+                'unit_id' => 'required',
+                'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
+                'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
+            ]);    
+        }
+        else if ($this->selectedTab=='company') {
+            $rules = array_merge($rules, [
+                'project' => 'required',
+                'unit_id' => 'required',
+                'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
+                'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
+                'company_trade_license' =>'required|file|mimes:pdf,jpg,png|max:5120'
+            ]); 
+        }
         return $rules;
     }
 
@@ -164,7 +184,7 @@ class FormContent extends UtilityClass
             $rules["buyers.$index.address"] = "required|string";
             $rules["buyers.$index.country"] = "required|string";
             $rules["buyers.$index.passport_number"] = "required|string";
-            $rules["buyers.$index.emirates_id"] = "required|string";
+            $rules["buyers.$index.emirates_id"] = $this->selectedTab !='international' ? "required|string" : "";
         }
 
         return $rules;
@@ -251,7 +271,10 @@ class FormContent extends UtilityClass
 
     public function submit()
     {
+        
+        
         $this->validate();
+
         //Store to Database
         $primaryBuyer = $this->savePrimaryBuyer();
         $secondaryBuyer = $this->saveSecondaryBuyers($primaryBuyer);
@@ -314,6 +337,8 @@ class FormContent extends UtilityClass
             }
         }
 
+        $json = json_encode($data);
+        dd($json);
         //Call Saleforce API Here
 
 
@@ -395,7 +420,7 @@ class FormContent extends UtilityClass
             'address' => $this->buyers[$index]['address'],
             'country' => $this->buyers[$index]['country'],
             'passport_number' => $this->buyers[$index]['passport_number'],
-            'emirates_id' => $this->buyers[$index]['emirates_id'],
+            'emirates_id' => isset($this->buyers[$index]['emirates_id']) ? $this->buyers[$index]['emirates_id'] : null
         ]);
 
         if ($index === 0) {
@@ -427,8 +452,6 @@ class FormContent extends UtilityClass
             $buyer->is_primary_buyer = 1;
             $buyer->order_id = date('Ymdh') . rand(0, 1000);
 
-
-
         } else {
             // Secondary buyer, set is_primary_buyer to 0
             $buyer->is_primary_buyer = 0;
@@ -453,8 +476,10 @@ class FormContent extends UtilityClass
         return null;
     }
 
-    private function resetForm()
+    function resetForm()
     {
+        dd("here");
+        
         $this->selectedTab = 'national';
         // Reset form data
         $this->buyers = [

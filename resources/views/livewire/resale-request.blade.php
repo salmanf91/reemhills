@@ -14,13 +14,13 @@
         {{-- <livewire:form-content :buyer-count="$buyerCount" /> --}}
         <ul  class="nav nav-pills mb-3" id="pills-tab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#national">National</a>
+                <a class="nav-link active" data-toggle="tab" href="#national" >National</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#international">International</a>
+                <a class="nav-link" data-toggle="tab" href="#international" >International</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#company">Company</a>
+                <a class="nav-link" data-toggle="tab" href="#company" >Company</a>
             </li>
         </ul>
 

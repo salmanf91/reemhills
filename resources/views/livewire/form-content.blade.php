@@ -35,7 +35,7 @@
                         <div class="col-sm-9">
                             <!-- Radio buttons for gender -->
                             <div class="form-check form-check-inline">
-                                <input wire:model="buyers.0.gender" class="form-check-input" type="radio" id="primary_gender_male" name="primary_gender_male" value="Male">
+                                <input wire:model="buyers.0.gender" class="form-check-input" type="radio" id="primary_gender_male" name="primary_gender_male" value="Male" checked="checked">
                                 <label class="form-check-label" for="gender_male_primary">Male</label>
                             </div>
                             <div class="form-check form-check-inline">
@@ -154,7 +154,7 @@
                                 <div class="col-sm-9">
                                     <!-- Radio buttons for gender -->
                                     <div class="form-check form-check-inline">
-                                        <input wire:model="buyers.{{ $index }}.gender" class="form-check-input" type="radio" id="buyers_gender_male_{{ $index }}" name="buyers_gender_{{ $index }}" value="Male">
+                                        <input wire:model="buyers.{{ $index }}.gender" class="form-check-input" type="radio" id="buyers_gender_male_{{ $index }}" name="buyers_gender_{{ $index }}" value="Male" checked="checked">
                                         <label class="form-check-label" for="gender_male_{{ $index }}">Male</label>
                                     </div>
                                     <div class="form-check form-check-inline">
