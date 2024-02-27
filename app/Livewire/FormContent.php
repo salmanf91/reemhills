@@ -244,7 +244,6 @@ class FormContent extends UtilityClass
     private function getDocumentType($path)
     {
         $extension = $this->getFileExtension($path);
-        dd($extension);
         switch ($extension) {
             case 'pdf':
                 return 'pdf';
@@ -266,6 +265,7 @@ class FormContent extends UtilityClass
         //Store to Database
         $primaryBuyer = $this->savePrimaryBuyer();
         $secondaryBuyer = $this->saveSecondaryBuyers($primaryBuyer);
+        // dd($primaryBuyer);
         $data = [];
         if ($primaryBuyer) {
             $data = [
@@ -328,7 +328,6 @@ class FormContent extends UtilityClass
 
         $buyerData = $primaryBuyer;
         $json = json_encode($data, JSON_PRETTY_PRINT);
-        dd($json);
         //Call Saleforce API Here
 
         $sfResponse = SalesforceController::postData($json);
