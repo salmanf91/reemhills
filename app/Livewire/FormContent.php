@@ -312,7 +312,8 @@ class FormContent extends UtilityClass
         //Call Saleforce API Here
 
         $buyerData = $primaryBuyer;
-        $json = json_encode($data);
+        $json = json_encode($data, JSON_PRETTY_PRINT);
+        dd($json);
         //Call Saleforce API Here
 
         $sfResponse = SalesforceController::postData($data);

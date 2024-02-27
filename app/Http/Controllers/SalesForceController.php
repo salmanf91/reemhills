@@ -71,7 +71,6 @@ class SalesforceController extends Controller
                 ]);
                 
                 $data = json_decode($response->getBody()->getContents(), true);
-                dd($data);
                 // Process response data as needed
                 return response()->json($data);
                 
