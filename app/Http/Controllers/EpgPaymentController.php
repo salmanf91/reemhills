@@ -12,6 +12,7 @@ class EpgPaymentController extends Controller
 {
     public static $epgUrl;
     public static $epgPort;
+    public static $flag;
 
     public static function initialize()
     {
@@ -66,15 +67,20 @@ class EpgPaymentController extends Controller
     }
 
 
-
     public function finalizePayment(Request $request)
     {
         $orderId = $this->validateOrderId($request);
         $buyer = $this->findBuyer($orderId);
         $epgResponse = $this->finalizeEpgPayment($buyer->transaction_id);
         $this->handleEpgResponse($epgResponse, $buyer);
-        dd('Payment successful');
-        return redirect()->route('payment.success');
+        //dd($epgResponse->Transaction->ResponseClassDescription);
+        // dd('Payment successful');
+        // return redirect()->route('payment.success');
+
+        // Determine the flag based on the payment status (success or error)
+        $flag = $epgResponse->Transaction->ResponseCode == 0 ? 'success' : 'error';
+        // Redirect to the /thankyou route with the dynamic flag
+        return redirect()->to('thankyou/'.$flag);
     }
 
     private function validateOrderId($request)

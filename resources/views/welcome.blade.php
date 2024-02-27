@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Register</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
-    <link href="css/reemhills.css" rel="stylesheet">
+    <link href="{{ asset('css/reemhills.css') }}" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
@@ -18,7 +18,9 @@
         @livewire('resale-request')
     @elseif(request()->path() === 'login')
         @livewire('super-admin-login')
-    @elseif(request()->path() === 'thankyou')
+    @elseif(request()->path() === 'thankyou/success')
+        @livewire('payment-response-handler')
+    @elseif(request()->path() === 'thankyou/error')
         @livewire('payment-response-handler')
     @endif
 </div>

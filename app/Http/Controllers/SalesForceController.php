@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
 class SalesforceController extends Controller
-{    
+{
     public static $token_url;
     public static $client_id;
     public static $client_secret;
     public static $username;
     public static $password;
     public static $api_url;
-    
+
     public static function initialize()
     {
         self::$token_url = config('sfconfig.sandbox.token_url');
@@ -29,7 +29,7 @@ class SalesforceController extends Controller
     {
         self::initialize();
         $client = new Client();
-           
+
         try {
             $response = $client->post(self::$token_url, [
                 'form_params' => [
@@ -41,23 +41,23 @@ class SalesforceController extends Controller
                 ],
                 'verify' => false
             ]);
-            
+
             $data = json_decode($response->getBody()->getContents(), true);
             $token = $data['access_token'];
             return $token;
-            
+
         } catch (\Exception $e) {
             return null;
         }
     }
 
     public static function postData($data)
-    {        
-        dd($data);
+    {
+        // dd($data);
         $token = self::getToken();
         if ($token) {
             $client = new Client();
-            
+
             try {
 
                 $response = $client->post(self::$api_url, [
@@ -69,12 +69,14 @@ class SalesforceController extends Controller
                     'json' => $data,
                     'verify' => false
                 ]);
-                
+
                 $data = json_decode($response->getBody()->getContents(), true);
+
                 // Process response data as needed
                 return response()->json($data);
-                
+
             } catch (\Exception $e) {
+
                 // Handle exception
                 return response()->json(['error' => $e->getMessage()], 500);
             }
