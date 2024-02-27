@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Buyer;
 use App\Models\BuyerRelationship;
 use App\Models\UnitDetail;
+use App\Models\Country;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -26,6 +27,7 @@ class FormContent extends UtilityClass
     public $unit_nos = [];
     public $building = [];
     public $type = [];
+    public $countries = [];
     public $passport_copy;
     public $emirates_id_document;
     public $mou_document;
@@ -38,12 +40,13 @@ class FormContent extends UtilityClass
     public $type_id;
 
     protected $rules;
-    
+
     public $unitDetails = [];
 
     public function mount () {
         $this->project = $this->getData('project_id');
         $this->unitDetails = UnitDetail::all();
+        $this->countries = $this->getCountryForDropdown();
     }
 
     private function getData ($column) {
@@ -52,7 +55,7 @@ class FormContent extends UtilityClass
     }
 
     function getTypeForDropdown() {
-        
+
         $this->type = [];
         $this->building = [];
         $this->unit_nos = [];
@@ -62,6 +65,11 @@ class FormContent extends UtilityClass
         ->select('type_id')
         ->get();
         $this->type = $distinctRecords->pluck('type_id')->unique()->toArray();
+    }
+
+    public function getCountryForDropdown()
+    {
+        return Country::pluck('name', 'id'); // Assuming 'name' is the field containing country names in your 'countries' table
     }
 
     // function getBuildingForDropdown() {
@@ -146,7 +154,7 @@ class FormContent extends UtilityClass
     private function generateRules()
     {
         $rules = [];
-        
+
         foreach ($this->buyers as $index => $buyer) {
             $rules["buyers.$index.name"] = "required|string";
             $rules["buyers.$index.dob"] = "required|date";
@@ -247,7 +255,7 @@ class FormContent extends UtilityClass
         //Store to Database
         $primaryBuyer = $this->savePrimaryBuyer();
         $secondaryBuyer = $this->saveSecondaryBuyers($primaryBuyer);
-        
+
         $data = [];
         if ($primaryBuyer) {
             $nameParts = explode(' ', $primaryBuyer['buyers_name']);
@@ -419,7 +427,7 @@ class FormContent extends UtilityClass
             $buyer->is_primary_buyer = 1;
             $buyer->order_id = date('Ymdh') . rand(0, 1000);
 
-            
+
 
         } else {
             // Secondary buyer, set is_primary_buyer to 0

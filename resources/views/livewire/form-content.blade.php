@@ -61,7 +61,7 @@
                             <input wire:model="company_tl_no" type="text" class="form-control from-input" id="tl_no" name="tl_no" placeholder="Type TL Number" required>
                         </div>
                     </div>
-                    
+
                     @endif
 
                     <div class="form-group row">
@@ -91,10 +91,24 @@
                     <div class="form-group row">
                         <label for="primary_country" class="col-sm-3 col-form-label">Country</label>
                         <div class="col-sm-9">
+                        <select wire:model="buyers.0.country"  wire:change="getCountryForDropdown()" class="form-control from-select" id="primary_country" name="primary_country" required>
+                            <option selected="selected">Select Country</option>
+                                @forelse ($countries as $country)
+                                <option value="{{$country}}">{{$country}}</option>
+                                @empty
+
+                                @endforelse
+                         </select>
+                         </div>
+                    </div>
+
+                    {{-- <div class="form-group row">
+                        <label for="primary_country" class="col-sm-3 col-form-label">Country</label>
+                        <div class="col-sm-9">
                             <!-- Replace input text with select if needed -->
                             <input wire:model="buyers.0.country" type="text" class="form-control from-input" id="primary_country" name="primary_country" required>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="form-group row">
                         <label for="primary_passport_number" class="col-sm-3 col-form-label">Passport Number</label>
@@ -174,10 +188,24 @@
                             <div class="form-group row">
                                 <label for="buyers_country_{{ $index }}" class="col-sm-3 col-form-label">Country</label>
                                 <div class="col-sm-9">
+                                <select wire:model="buyers.{{ $index }}.country"  wire:change="getCountryForDropdown()" class="form-control from-select" id="buyers_country_{{ $index }}" name="buyers_country[]">
+                                    <option selected="selected">Select Country</option>
+                                        @forelse ($countries as $country)
+                                        <option value="{{$country}}">{{$country}}</option>
+                                        @empty
+
+                                        @endforelse
+                                 </select>
+                                 </div>
+                            </div>
+
+                            {{-- <div class="form-group row">
+                                <label for="buyers_country_{{ $index }}" class="col-sm-3 col-form-label">Country</label>
+                                <div class="col-sm-9">
                                     <!-- Replace input text with select if needed -->
                                     <input wire:model="buyers.{{ $index }}.country" type="text" class="form-control from-input" id="buyers_country_{{ $index }}" name="buyers_country[]">
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="form-group row">
                                 <label for="buyers_passport_number_{{ $index }}" class="col-sm-3 col-form-label">Passport Number</label>
@@ -214,7 +242,7 @@
                         </div>
                     </div>
 
-                    
+
                     {{-- <div class="form-group row">
                         <label for="phase" class="col-sm-3 col-form-label">Phase</label>
                         <div class="col-sm-9">
@@ -223,7 +251,7 @@
                                 @forelse ($phase as $item)
                                 <option value="{{$item}}">{{$item}}</option>
                                 @empty
-                                
+
                                 @endforelse
                             </select>
                         </div>
