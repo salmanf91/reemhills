@@ -307,7 +307,9 @@ class FormContent extends UtilityClass
                             "passport_document_type" => $this->getDocumentType($primaryBuyer['passport_path']),
                             "emirates_id_document_type" => $this->getDocumentType($primaryBuyer['emirates_id_path']),
                             "mou_Document_type" => $this->getDocumentType($primaryBuyer['mou_doc_path']),
-                            "tl_number" => $primaryBuyer['trade_license'] ?? null,
+                            "trade_license_document" => $this->getImageAsBase64($primaryBuyer['trade_license_path']),
+                            "trade_license_document_type" => $this->getDocumentType($primaryBuyer['trade_license_path']),
+                            "tl_number" => $primaryBuyer['tl_no'] ?? null,
                             "address" => $primaryBuyer['address'] ?? null,
                             "country" => $primaryBuyer['country'] ?? null,
                             "gender" => $primaryBuyer['gender'] ?? null,
@@ -337,8 +339,8 @@ class FormContent extends UtilityClass
             }
         }
 
-        $json = json_encode($data);
-        dd($json);
+        // $json = json_encode($data);
+        // dd($json);
         //Call Saleforce API Here
 
 
