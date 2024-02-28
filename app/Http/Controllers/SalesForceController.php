@@ -53,8 +53,7 @@ class SalesforceController extends Controller
 
     public static function postData($data)
     {
-        
-        
+
         $token = self::getToken();
         if ($token) {
             $client = new Client();

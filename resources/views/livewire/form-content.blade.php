@@ -126,11 +126,13 @@
                     </div>
                     @endif
 
-                    <div class="form-group row">
-                        <div class="col-sm-9 offset-sm-3">
-                            <button type="button" wire:click="addBuyer" class="btn btn-success">Add Buyer {{ $buyerCount + 1 }}</button>
+                    @if ($showAddBuyerButton)
+                        <div class="form-group row">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="button" wire:click="addBuyer" class="btn btn-success">Add Buyer {{ $buyerCount + 1 }}</button>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     @foreach ($buyers as $index => $buyer)
                         @if ($loop->index >= 1)
@@ -301,7 +303,14 @@
                     <div class="form-group row"  >
                         <label for="unit_no" class="col-sm-3 col-form-label">Unit Number</label>
                         <div class="col-sm-9" wire:ignore>
-                        <select wire:model="unit_id"  class="form-control from-select" id="unit_no" name="unit_no" required>
+                        {{-- <select wire:model="unit_id"  class="form-control from-select" id="unit_no" name="unit_no" required>
+                            <option selected="selected">Select Phase</option>
+                                @forelse ($unitDetails as $unitDetail)
+                                <option value="{{ $unitDetail->phase_id . '|' . $unitDetail->type_id . '|' . $unitDetail->building_id . '|' . $unitDetail->unit_name }}">{{ $unitDetail->phase_id . ' | ' . $unitDetail->type_id . ' | ' . $unitDetail->building_id . ' | ' . $unitDetail->unit_name }}</option>
+                                @empty
+                                @endforelse
+                         </select> --}}
+                         <select wire:model="unit_id"  class="form-control from-select" id="{{$selectedTab}}_unit_no" name="unit_no" required>
                             <option selected="selected">Select Phase</option>
                                 @forelse ($unitDetails as $unitDetail)
                                 <option value="{{ $unitDetail->phase_id . '|' . $unitDetail->type_id . '|' . $unitDetail->building_id . '|' . $unitDetail->unit_name }}">{{ $unitDetail->phase_id . ' | ' . $unitDetail->type_id . ' | ' . $unitDetail->building_id . ' | ' . $unitDetail->unit_name }}</option>
@@ -353,12 +362,30 @@
 </div>
 
 @push('scripts')
+
 <script>
+    // $(document).ready(function () {
+    //     $('#unit_no').select2();
+    // });
+    // $('#unit_no').on('change', function (e) {
+    //     var data = $('#unit_no').select2("val");
+    //     @this.set('unit_id', data);
+    // });
     $(document).ready(function () {
-        $('#unit_no').select2();
+        $('#national_unit_no').select2();
+        $('#international_unit_no').select2();
+        $('#company_unit_no').select2();
     });
-    $('#unit_no').on('change', function (e) {
-        var data = $('#unit_no').select2("val");
+    $('#national_unit_no').on('change', function (e) {
+        var data = $('#national_unit_no').select2("val");
+        @this.set('unit_id', data);
+    });
+    $('#international_unit_no').on('change', function (e) {
+        var data = $('#international_unit_no').select2("val");
+        @this.set('unit_id', data);
+    });
+    $('#company_unit_no').on('change', function (e) {
+        var data = $('#company_unit_no').select2("val");
         @this.set('unit_id', data);
     });
 </script>
