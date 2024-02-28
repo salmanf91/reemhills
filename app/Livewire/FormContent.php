@@ -20,6 +20,7 @@ class FormContent extends UtilityClass
     const SUCCESS_RESPONSE_CODE = 0;
 
     public $selectedTab = 'national';
+    public $showAddBuyerButton = true;
     public $buyerCount = 1;
     public $buyers = [];
     public $project =[];
@@ -149,15 +150,15 @@ class FormContent extends UtilityClass
                 'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
                 'emirates_id_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
                 'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
-            ]);    
-        } 
+            ]);
+        }
         else if ($this->selectedTab=='international') {
             $rules = array_merge($rules, [
                 'project' => 'required',
                 'unit_id' => 'required',
                 'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
                 'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
-            ]);    
+            ]);
         }
         else if ($this->selectedTab=='company') {
             $rules = array_merge($rules, [
@@ -166,7 +167,7 @@ class FormContent extends UtilityClass
                 'passport_copy' => 'required|file|mimes:pdf,jpg,png|max:5120',
                 'mou_document' => 'required|file|mimes:pdf,jpg,png|max:5120',
                 'company_trade_license' =>'required|file|mimes:pdf,jpg,png|max:5120'
-            ]); 
+            ]);
         }
         return $rules;
     }
@@ -271,8 +272,8 @@ class FormContent extends UtilityClass
 
     public function submit()
     {
-        
-        
+
+
         $this->validate();
 
         //Store to Database
@@ -481,7 +482,7 @@ class FormContent extends UtilityClass
     function resetForm()
     {
         dd("here");
-        
+
         $this->selectedTab = 'national';
         // Reset form data
         $this->buyers = [
@@ -512,27 +513,56 @@ class FormContent extends UtilityClass
     }
 
 
+    // public function addBuyer()
+    // {
+    //     $this->buyerCount++;
+    //     if (!isset($this->buyers[0])) {
+    //         $this->buyers = [[]];
+    //     }
+
+    //     array_splice($this->buyers, 1, 0, []);
+    //     $this->buyers[] = [
+    //         'name' => '',
+    //         'dob' => '',
+    //         'gender' => 'Male',
+    //         'mobile_no' => '',
+    //         'email_id' => '',
+    //         'address' => '',
+    //         'country' => '',
+    //         'passport_number' => '',
+    //         'emirates_id' => ''
+    //     ];
+
+    //     $this->rules = $this->generateRules();
+    // }
+
+
     public function addBuyer()
     {
-        $this->buyerCount++;
-        if (!isset($this->buyers[0])) {
-            $this->buyers = [[]];
+        if ($this->buyerCount <= 4) {
+            $this->buyerCount++;
+
+            if (!isset($this->buyers[0])) {
+                $this->buyers = [[]];
+            }
+
+            array_splice($this->buyers, 1, 0, []);
+            $this->buyers[] = [
+                'name' => '',
+                'dob' => '',
+                'gender' => 'Male',
+                'mobile_no' => '',
+                'email_id' => '',
+                'address' => '',
+                'country' => '',
+                'passport_number' => '',
+                'emirates_id' => ''
+            ];
+
+            $this->rules = $this->generateRules();
+        } else {
+            $this->showAddBuyerButton = false; // Hide the button when maximum limit is reached
         }
-
-        array_splice($this->buyers, 1, 0, []);
-        $this->buyers[] = [
-            'name' => '',
-            'dob' => '',
-            'gender' => 'Male',
-            'mobile_no' => '',
-            'email_id' => '',
-            'address' => '',
-            'country' => '',
-            'passport_number' => '',
-            'emirates_id' => ''
-        ];
-
-        $this->rules = $this->generateRules();
     }
 
     public function dismissErrorMessage()
